@@ -5,4 +5,5 @@ export const colors = {
   text: '#000000',
   white: '#ffffff',
   overlay: 'rgba(0, 0, 0, 0.5)',
+  error: 'red',
 };

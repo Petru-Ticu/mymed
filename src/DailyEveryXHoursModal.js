@@ -1,9 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, Modal, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { colors } from './theme/colors';
+import { useI18n } from './i18n';
 
 // Placeholder for "Daily, every X hours". Wired from the frequency picker; fields are not collected yet.
 export default function DailyEveryXHoursModal({ visible, onClose, validate }) {
+  const { t } = useI18n();
   const handleModalClose = () => {
     if (validate()) {
       onClose();
@@ -15,11 +17,11 @@ export default function DailyEveryXHoursModal({ visible, onClose, validate }) {
       <TouchableWithoutFeedback onPress={handleModalClose}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Necessary Questions</Text>
-            <Text style={styles.modalQuestion}>How many hours between each dose?</Text>
-            <Text style={styles.modalQuestion}>What is the maximum number of pills, drops, etc. that you can take daily?</Text>
+            <Text style={styles.modalTitle}>{t('meds.necessaryQuestions')}</Text>
+            <Text style={styles.modalQuestion}>{t('meds.hoursBetween')}</Text>
+            <Text style={styles.modalQuestion}>{t('meds.maxDaily')}</Text>
             <TouchableOpacity style={styles.doneButton} onPress={handleModalClose}>
-              <Text style={styles.doneButtonText}>Done</Text>
+              <Text style={styles.doneButtonText}>{t('meds.done')}</Text>
             </TouchableOpacity>
           </View>
         </View>

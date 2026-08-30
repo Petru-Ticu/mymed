@@ -2,10 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from './theme/colors';
+import { useI18n } from './i18n';
 
 const { width, height } = Dimensions.get('window');
 
 export default function FrequencyModalLayout({ onBackPress, title, children, onDonePress }) {
+  const { t } = useI18n();
   return (
     <View style={styles.modalContainer}>
       <View style={styles.modalContent}>
@@ -21,7 +23,7 @@ export default function FrequencyModalLayout({ onBackPress, title, children, onD
           {children}
         </ScrollView>
         <TouchableOpacity onPress={onDonePress} style={styles.doneButton}>
-          <Text style={styles.doneButtonText}>Done</Text>
+          <Text style={styles.doneButtonText}>{t('meds.done')}</Text>
         </TouchableOpacity>
       </View>
     </View>

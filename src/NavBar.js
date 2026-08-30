@@ -6,16 +6,18 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppNavigation } from './navigation/useAppNavigation';
 import { colors } from './theme/colors';
+import { useI18n } from './i18n';
 
 const tabs = [
-  { key: 'home', label: 'HOME', Icon: Icon, iconName: 'home-sharp', handler: 'handleHomePress' },
-  { key: 'analytics', label: 'MyANALYTICS', Icon: MaterialIcons, iconName: 'analytics', handler: 'handleMyAnalyticsPress' },
-  { key: 'meds', label: 'MyMEDS', Icon: MaterialCommunityIcons, iconName: 'pill', handler: 'handleMyMedsPress' },
-  { key: 'more', label: 'MORE', Icon: MaterialCommunityIcons, iconName: 'dots-horizontal', handler: 'handleMorePress' },
+  { key: 'home', labelKey: 'nav.home', Icon: Icon, iconName: 'home-sharp', handler: 'handleHomePress' },
+  { key: 'analytics', labelKey: 'nav.analytics', Icon: MaterialIcons, iconName: 'analytics', handler: 'handleMyAnalyticsPress' },
+  { key: 'meds', labelKey: 'nav.meds', Icon: MaterialCommunityIcons, iconName: 'pill', handler: 'handleMyMedsPress' },
+  { key: 'more', labelKey: 'nav.more', Icon: MaterialCommunityIcons, iconName: 'dots-horizontal', handler: 'handleMorePress' },
 ];
 
 export default function NavBar() {
   const nav = useAppNavigation();
+  const { t } = useI18n();
   const { windowHeight } = nav;
   const insets = useSafeAreaInsets();
   // Keep 5% from the bottom, but never sit under the home indicator / Android nav bar.
@@ -29,7 +31,7 @@ export default function NavBar() {
           <Pressable key={tab.key} onPress={nav[tab.handler]} style={styles.button}>
             <View style={styles.buttonContent}>
               <TabIcon name={tab.iconName} size={26} color={colors.text} />
-              <Text style={styles.buttonText}>{tab.label}</Text>
+              <Text style={styles.buttonText}>{t(tab.labelKey)}</Text>
             </View>
           </Pressable>
         );

@@ -1,6 +1,8 @@
 import { activityLog } from './userStore';
 import { applyTakenDose } from './inventoryAmount';
 import { parseFrequencyText, parseStoredDate } from './utils/frequencyParse';
+import { t } from './i18n';
+import { unitLabel } from './i18n/labels';
 
 const LOG = '[MedicationDose]';
 
@@ -96,6 +98,13 @@ function notifyHistory() {
 export function subscribeMedicationHistory(listener) {
   historyListeners.add(listener);
   return () => historyListeners.delete(listener);
+}
+
+export function resetMedicationHistory() {
+  medicationHistory.lists = {};
+  medicationHistory.doseEvents = [];
+  firedScheduledKeys.clear();
+  notifyHistory();
 }
 
 function logStore(reason) {
@@ -378,15 +387,27 @@ function eventDateLabel(event) {
 }
 
 export function formatDoseSentence(event) {
-  const unit = event.unit || 'unit(s)';
+  const unit = unitLabel(event.unit || 'unit(s)');
   const when = event.answeredAt?.time ? event.answeredAt.time.slice(0, 5) : '';
   const date = eventDateLabel(event);
-  const datePart = date ? ` on ${date}` : '';
+  const datePart = date ? t('dose.onDate', { date }) : '';
   if (event.kind === 'scheduledSkipped') {
-    return `You did not take ${event.productName} at ${event.scheduledTime}${datePart}.`;
+    return t('dose.skippedSentence', { name: event.productName, time: event.scheduledTime, datePart });
   }
   if (event.kind === 'asNeededTaken') {
-    return `You took ${event.quantity} ${unit} of ${event.productName} at ${when}${datePart}.`;
+    return t('dose.takenAsNeededSentence', {
+      quantity: event.quantity,
+      unit,
+      name: event.productName,
+      when,
+      datePart,
+    });
   }
-  return `You took ${event.quantity} ${unit} of ${event.productName} at ${event.scheduledTime}${datePart}.`;
+  return t('dose.takenSentence', {
+    quantity: event.quantity,
+    unit,
+    name: event.productName,
+    time: event.scheduledTime,
+    datePart,
+  });
 }

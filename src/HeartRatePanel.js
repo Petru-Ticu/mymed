@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
+import { useI18n } from './i18n';
 
 const HeartRatePanel = ({ heartRateData }) => {
+  const { t } = useI18n();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Heart Rate Monitor</Text>
+      <Text style={styles.title}>{t('analytics.heartRate')}</Text>
       <LineChart
         data={{
           labels: heartRateData.map((_, index) => index.toString()),

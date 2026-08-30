@@ -96,7 +96,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   errorText: {
-    color: 'red',
     fontSize: 12,
     marginTop: -15,
     marginBottom: 10,

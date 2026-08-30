@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MAX_NUM_OF_MEDS, ERROR_MESSAGES_MODS_REMS, ERRORS_DAILY_X_TIMES_A_DAY } from './constants';
 import { styles } from './ModalsReminders.styles';
+import FieldError from './FieldError';
+import { useI18n } from './i18n';
 import {
   amountAtOrBelowThreshold,
   amountBelowOther,
@@ -19,7 +21,8 @@ const ModalsReminders = forwardRef(({
      inputValueTimesPerDayDXTAD, setInputTimesValuesError, //variables from the file DailyXTimesADayModal.js
 
      activeModal,
-    }, ref) => {
+     }, ref) => {
+        const { t } = useI18n();
 
         const [hasUserInteractedWithAmount, setHasUserInteractedWithAmount] = useState(false); //checks to see if the user has interacted with the amount filed
         const [hasUserInteractedWithThreshold, setHasUserInteractedWithThreshold] = useState(false); //checks to see if the user has interacted with the threshold field
@@ -392,9 +395,9 @@ const ModalsReminders = forwardRef(({
 
     return (
         <View>
-            <Text style={styles.modalQuestion}>Do you want to get reminder/s to refill your med/s inventory?</Text>
+            <Text style={styles.modalQuestion}>{t('meds.refillQuestion')}</Text>
             <View style={styles.reminderContainer}>
-                <Text style={styles.reminderText}>Remind me</Text>
+                <Text style={styles.reminderText}>{t('meds.remindMe')}</Text>
                 <TouchableOpacity onPress={() => {
                     if (activeModal === "asNeeded") {
                         handleSelectionChangeAsNeeded(!isSelectedAsNeeded);
@@ -406,8 +409,8 @@ const ModalsReminders = forwardRef(({
                 </TouchableOpacity>
             </View>
                 <View>
-                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>CURRENT INVENTORY FOR YOUR MED/S</Text>
-                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>AMOUNT</Text>
+                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>{t('meds.currentInventory')}</Text>
+                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>{t('meds.amount')}</Text>
                     <TextInput
     style={[styles.remindFields, 
         ((amountError || inventoryError || amountGreaterThanMaxDoseError || amountSmallerThanMaxNumMedsError) && (isSelectedAsNeeded || isSelectedDXTAD)) ? { borderColor: 'red', borderWidth: 2 } : {},
@@ -420,25 +423,12 @@ const ModalsReminders = forwardRef(({
 />
 
                     <View style={styles.errorContainerAmount}>
-                        {(activeModal === "asNeeded" && amountError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && amountError && isSelectedDXTAD) ? <Text style={[styles.errorText, {
-                             color: amountError ? 'red' : 'transparent',
-                        }]}>{amountError}</Text> : null}
-
-
-                        {(activeModal === "asNeeded" && amountGreaterThanMaxDoseError && isSelectedAsNeeded) ? <Text style={[styles.errorText, {
-                             color: amountGreaterThanMaxDoseError ? 'red' : 'transparent',
-                        }]}>{amountGreaterThanMaxDoseError}</Text> : null}
-
-                        {(activeModal === "dailyXTimesADay" && amountSmallerThanMaxNumMedsError && isSelectedDXTAD) ? <Text style={[styles.errorText, {
-                            color: amountSmallerThanMaxNumMedsError ? 'red' : 'transparent',
-                        }]}>{amountSmallerThanMaxNumMedsError}</Text> : null}
-
-
-                        {(activeModal === "asNeeded" && inventoryError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && inventoryError && isSelectedDXTAD) ? <Text style={[styles.errorText, {
-                             color: inventoryError ? 'red' : 'transparent',
-                        }]}>{inventoryError}</Text> : null}
+                        {(activeModal === "asNeeded" && amountError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && amountError && isSelectedDXTAD) ? <FieldError message={amountError} /> : null}
+                        {(activeModal === "asNeeded" && amountGreaterThanMaxDoseError && isSelectedAsNeeded) ? <FieldError message={amountGreaterThanMaxDoseError} /> : null}
+                        {(activeModal === "dailyXTimesADay" && amountSmallerThanMaxNumMedsError && isSelectedDXTAD) ? <FieldError message={amountSmallerThanMaxNumMedsError} /> : null}
+                        {(activeModal === "asNeeded" && inventoryError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && inventoryError && isSelectedDXTAD) ? <FieldError message={inventoryError} /> : null}
                     </View>
-                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>THRESHOLD</Text>
+                    <Text style={[styles.textRemind, {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}>{t('meds.threshold')}</Text>
                     <TextInput
     style={[styles.remindFields, thresholdError && (isSelectedAsNeeded || isSelectedDXTAD) ? { borderColor: 'red', borderWidth: 2 } : {}, 
         {opacity: (activeModal === "asNeeded" && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && isSelectedDXTAD) ? 1 : 0.5}]}
@@ -450,9 +440,7 @@ const ModalsReminders = forwardRef(({
 />
 
                     <View style={styles.errorContainerThreshold}>
-                    {(activeModal === "asNeeded" && thresholdError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && thresholdError && isSelectedDXTAD) ? <Text style={[styles.errorText, {
-                            color: thresholdError ? 'red' : 'transparent',
-                    }]}>{thresholdError}</Text> : null}        
+                    {(activeModal === "asNeeded" && thresholdError && isSelectedAsNeeded) || (activeModal === "dailyXTimesADay" && thresholdError && isSelectedDXTAD) ? <FieldError message={thresholdError} /> : null}        
                     </View>            
                 </View>  
         </View>

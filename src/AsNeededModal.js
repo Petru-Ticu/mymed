@@ -10,7 +10,8 @@ import {
   getFrequencyDone,
 } from './frequencyDraft';
 import { sanitizeDoseCount } from './utils/doseCountInput';
-import { inventoryValue } from './utils/frequencyParse';
+import FieldError from './FieldError';
+import { useI18n } from './i18n';
 
 export default function AsNeededModal({
   asNeededModalVisible,
@@ -24,6 +25,7 @@ export default function AsNeededModal({
   initialAmount,
   initialThreshold,
 }) {
+    const { t } = useI18n();
     const modalNameAsNeeded = "AsNeeded (PRM)";
     const [maxDoseErrorAsNeeded, setMaxDoseErrorAsNeeded] = useState('');
     const [amountAsNeeded, setAmountAsNeeded] = useState('');
@@ -142,11 +144,11 @@ return (
      onRequestClose={handleBackPressAsNeeded}
     >
         <FrequencyModalLayout
-            title="Necessary Questions"
+            title={t('meds.necessaryQuestions')}
             onBackPress={handleBackPressAsNeeded}
             onDonePress={onDonePressAsNeeded}
         >
-            <Text style={styles.modalQuestion}>What is the maximum number of pills, drops, etc. that you can take daily?</Text>
+            <Text style={styles.modalQuestion}>{t('meds.maxDaily')}</Text>
             <TextInput
                 style={[styles.smallInput, {borderColor: maxDoseErrorAsNeeded ? 'red' : "#000000", borderWidth: maxDoseErrorAsNeeded ? 2 : 1}]}
                 onChangeText={handleMaxDailyDoseInputChange}
@@ -155,9 +157,7 @@ return (
                 maxLength={2}
             />
             <View style={styles.errorContainerMaxNumAsNeeded}>
-                {maxDoseErrorAsNeeded && <Text style={[styles.errorText, {
-                    color: maxDoseErrorAsNeeded ? 'red' : 'trasparent',
-                }]}>{maxDoseErrorAsNeeded}</Text>}
+                {maxDoseErrorAsNeeded ? <FieldError message={maxDoseErrorAsNeeded} /> : null}
             </View>
             <ModalsReminders
                 activeModal="asNeeded"

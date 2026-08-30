@@ -14,6 +14,7 @@ import Notifications from './Notifications';
 import { MedicalListProvider } from './MedicalListContext';
 import { navigationRef } from './navigation/navigationRef';
 import DoseReminderHost from './DoseReminderHost';
+import { I18nProvider } from './i18n';
 
 
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <MedicalListProvider>
+          <I18nProvider>
           <NavigationContainer ref={navigationRef}>
             <DoseReminderHost>
             <Stack.Navigator screenOptions={hiddenHeader}>
@@ -46,6 +48,7 @@ function App() {
             </Stack.Navigator>
             </DoseReminderHost>
           </NavigationContainer>
+          </I18nProvider>
         </MedicalListProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

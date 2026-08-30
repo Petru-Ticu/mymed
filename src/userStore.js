@@ -41,26 +41,70 @@ export const activityLog = {
   },
 };
 
+function asLanguageCode(value) {
+  if (!value) {
+    return 'en';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  return value.code || 'en';
+}
+
 export const sessionStore = {
   email: '',
   selectedLanguage: 'en',
+  password: '',
+  notifyOneMinuteBefore: true,
   savedAt: null,
 
-  save({ email, selectedLanguage }) {
-    this.email = email || '';
-    this.selectedLanguage = selectedLanguage || 'en';
+  save(fields = {}) {
+    if (fields.email !== undefined) {
+      this.email = fields.email || '';
+    }
+    if (fields.selectedLanguage !== undefined) {
+      this.selectedLanguage = asLanguageCode(fields.selectedLanguage);
+    }
+    if (fields.password !== undefined) {
+      this.password = fields.password || '';
+    }
+    if (fields.notifyOneMinuteBefore !== undefined) {
+      this.notifyOneMinuteBefore = Boolean(fields.notifyOneMinuteBefore);
+    }
     this.savedAt = publicStamp();
     activityLog.record('session.saved', { email: this.email });
+    notifyUserStore();
+  },
+
+  clearIdentity() {
+    this.email = '';
+    this.password = '';
+    this.notifyOneMinuteBefore = true;
+    this.savedAt = null;
+    activityLog.record('session.signedOut', {});
+    notifyUserStore();
   },
 
   getPublic() {
     return {
       email: this.email,
       selectedLanguage: this.selectedLanguage,
+      notifyOneMinuteBefore: this.notifyOneMinuteBefore,
       savedAt: this.savedAt,
     };
   },
 };
+
+const userStoreListeners = new Set();
+
+function notifyUserStore() {
+  userStoreListeners.forEach((listener) => listener());
+}
+
+export function subscribeUserStore(listener) {
+  userStoreListeners.add(listener);
+  return () => userStoreListeners.delete(listener);
+}
 
 export const accountStore = {
   firstName: '',
@@ -75,12 +119,15 @@ export const accountStore = {
     this.lastName = lastName || '';
     this.gender = gender || '';
     this.birthDate = birthDate || '';
-    this.passwordSet = Boolean(passwordTyped);
+    if (passwordTyped !== undefined) {
+      this.passwordSet = Boolean(passwordTyped);
+    }
     this.savedAt = publicStamp();
     activityLog.record('account.saved', {
       firstName: this.firstName,
       lastName: this.lastName,
     });
+    notifyUserStore();
   },
 
   getPublic() {
@@ -92,6 +139,16 @@ export const accountStore = {
       passwordSet: this.passwordSet,
       savedAt: this.savedAt,
     };
+  },
+
+  clear() {
+    this.firstName = '';
+    this.lastName = '';
+    this.gender = '';
+    this.birthDate = '';
+    this.passwordSet = false;
+    this.savedAt = null;
+    notifyUserStore();
   },
 };
 

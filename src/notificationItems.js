@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { classifyInventory, getDueOccurrences, getUpcomingOccurrences } from './frequencyHandlers';
+import { classifyInventory, getDueOccurrences, getInboxUpcomingOccurrences, getUpcomingOccurrences } from './frequencyHandlers';
 import { useMedicalList } from './MedicalListContext';
 import { medicationHistory, subscribeMedicationHistory } from './medicationDoseActions';
+import { t, useI18n } from './i18n';
+import { unitLabel } from './i18n/labels';
 
 function calendarDay(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -13,7 +15,7 @@ function dayLabel(date) {
 
 export function formatCountdown(ms) {
   if (ms <= 0) {
-    return 'now';
+    return t('notifications.now');
   }
   const total = Math.floor(ms / 1000);
   const hours = Math.floor(total / 3600);
@@ -21,12 +23,12 @@ export function formatCountdown(ms) {
   const seconds = total % 60;
   const parts = [];
   if (hours) {
-    parts.push(`${hours} hour${hours === 1 ? '' : 's'}`);
+    parts.push(hours === 1 ? t('notifications.hour', { count: hours }) : t('notifications.hours', { count: hours }));
   }
   if (minutes || hours) {
-    parts.push(`${minutes} minute${minutes === 1 ? '' : 's'}`);
+    parts.push(minutes === 1 ? t('notifications.minute', { count: minutes }) : t('notifications.minutes', { count: minutes }));
   }
-  parts.push(`${seconds} second${seconds === 1 ? '' : 's'}`);
+  parts.push(seconds === 1 ? t('notifications.second', { count: seconds }) : t('notifications.seconds', { count: seconds }));
   return parts.join(', ');
 }
 
@@ -84,15 +86,20 @@ export function getNotificationItems(lists, now = new Date()) {
         kind: 'due',
         needsAttention: true,
         sortKey: `0-${item.at.toISOString()}`,
-        title: 'Time to take your medicine',
-        body: `${item.scheduledTime}  ·  ${item.productName}\nTake ${item.quantity} ${item.unit} now.`,
-        hint: 'Tap here to take it or skip it.',
+        title: t('notifications.dueTitle'),
+        body: t('notifications.dueBody', {
+          time: item.scheduledTime,
+          name: item.productName,
+          quantity: item.quantity,
+          unit: unitLabel(item.unit),
+        }),
+        hint: t('notifications.dueHint'),
         countdownMs: 0,
         doseItem: doseItemFromOccurrence(item, listIndex),
       });
     });
 
-    const upcoming = getUpcomingOccurrences(list, now, 3);
+    const upcoming = getInboxUpcomingOccurrences(list, now);
     upcoming.forEach((item) => {
       const remaining = item.at.getTime() - now.getTime();
       if (remaining <= 0) {
@@ -104,7 +111,13 @@ export function getNotificationItems(lists, now = new Date()) {
         needsAttention: remaining <= 15 * 60 * 1000,
         sortKey: `1-${item.at.toISOString()}`,
         title: item.productName,
-        body: `Next dose at ${item.scheduledTime} on ${dayLabel(item.at)}.\nTake ${item.quantity} ${item.unit}.\nIn ${formatCountdown(remaining)}.`,
+        body: t('notifications.upcomingBody', {
+          time: item.scheduledTime,
+          date: dayLabel(item.at),
+          quantity: item.quantity,
+          unit: unitLabel(item.unit),
+          countdown: formatCountdown(remaining),
+        }),
         countdownMs: remaining,
         occurrence: item,
       });
@@ -120,9 +133,9 @@ export function getNotificationItems(lists, now = new Date()) {
         kind: 'empty',
         needsAttention: true,
         sortKey: `2-${warning.name}`,
-        title: 'None left',
-        body: `${warning.name} has 0 left.\nPlease add more to your inventory.`,
-        hint: 'Tap to open My Meds.',
+        title: t('notifications.emptyTitle'),
+        body: t('notifications.emptyBody', { name: warning.name }),
+        hint: t('notifications.openMedsHint'),
         goToMeds: true,
       });
     } else if (warning.level === 'atThreshold') {
@@ -131,9 +144,13 @@ export function getNotificationItems(lists, now = new Date()) {
         kind: 'low',
         needsAttention: true,
         sortKey: `3-${warning.name}`,
-        title: 'Refill point reached',
-        body: `${warning.name} is down to ${warning.amount}.\nYour refill point is ${warning.threshold}. Please get more.`,
-        hint: 'Tap to open My Meds.',
+        title: t('notifications.lowTitle'),
+        body: t('notifications.lowBody', {
+          name: warning.name,
+          amount: warning.amount,
+          threshold: warning.threshold,
+        }),
+        hint: t('notifications.openMedsHint'),
         goToMeds: true,
       });
     } else if (warning.level === 'approaching') {
@@ -142,9 +159,13 @@ export function getNotificationItems(lists, now = new Date()) {
         kind: 'approaching',
         needsAttention: true,
         sortKey: `4-${warning.name}`,
-        title: 'Two doses from refill',
-        body: `${warning.name} has ${warning.amount} left.\nAfter two more doses you will hit your refill point of ${warning.threshold}.`,
-        hint: 'Tap to open My Meds.',
+        title: t('notifications.approachingTitle'),
+        body: t('notifications.approachingBody', {
+          name: warning.name,
+          amount: warning.amount,
+          threshold: warning.threshold,
+        }),
+        hint: t('notifications.openMedsHint'),
         goToMeds: true,
       });
     }
@@ -176,6 +197,7 @@ export function getSoonestUpcoming(lists, now = new Date()) {
 
 export function useNotificationItems() {
   const { medicalLists } = useMedicalList();
+  const { language } = useI18n();
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => subscribeMedicationHistory(() => setNow(new Date())), []);
@@ -187,7 +209,7 @@ export function useNotificationItems() {
 
   const items = useMemo(
     () => getNotificationItems(medicalLists, now),
-    [medicalLists, now],
+    [medicalLists, now, language],
   );
 
   return {

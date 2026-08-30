@@ -8,11 +8,14 @@ import { useMedicalList } from './MedicalListContext';
 import { isAsNeededList } from './medicationDoseActions';
 import { useDoseActions } from './DoseReminderHost';
 import { getStyles } from './Mymeds.styles';
+import { useI18n } from './i18n';
+import { unitLabel } from './i18n/labels';
 
 export default function Mymeds() {
   const { navigation, windowHeight, windowWidth } = useAppNavigation();
   const { medicalLists, removeList } = useMedicalList();
   const { openAsNeededTake } = useDoseActions();
+  const { t } = useI18n();
   const styles = getStyles(windowWidth, windowHeight);
 
   useEffect(() => {
@@ -130,7 +133,7 @@ export default function Mymeds() {
           showsVerticalScrollIndicator={false}> 
       <View style={styles.body}>
 {medicalLists.length === 0 ? (
-            <Text style={styles.emptyListsText}>There are no Medical Reminder list/s{'\n'}right now created!</Text>
+            <Text style={styles.emptyListsText}>{t('meds.empty')}</Text>
           ) : (
             medicalLists.map((list, index) => (
               <TouchableOpacity key={`${index}-${list.productName}`} style={styles.medicalReminderGenList} onPress={() => handleListPress(list)}>
@@ -175,28 +178,28 @@ export default function Mymeds() {
                 showsVerticalScrollIndicator={false}
                >
                 <TouchableOpacity style={styles.textContainerCancelFullList} onPress={handleFullListClose}>
-                  <Text style={styles.textCancelFullList}>CANCEL</Text>
+                  <Text style={styles.textCancelFullList}>{t('meds.cancel')}</Text>
                 </TouchableOpacity>
                 <View style={styles.textContainerProductName}>
-                  <Text>{`Product Name: ${selectedList.productName}`}</Text>
+                  <Text>{t('meds.detailProduct', { name: selectedList.productName })}</Text>
                 </View>  
                 <View style={styles.textContainerUnit}>
-                  <Text>{`Unit: ${selectedList.unit}`}</Text>
+                  <Text>{t('meds.detailUnit', { unit: unitLabel(selectedList.unit) })}</Text>
                 </View>
                 <View style={styles.textContainerModalFrequency}>
-                  <Text>{`Frequency: ${selectedList.modalFrequency}`}</Text>
+                  <Text>{t('meds.detailFrequency', { frequency: selectedList.modalFrequency })}</Text>
                 </View>
                 <View style={styles.textContainerImportantInfo}>
-                  <Text>{`Important Info: ${formatImportantInfo(selectedList.importantInfo)}`}</Text>
+                  <Text>{t('meds.detailImportant', { info: formatImportantInfo(selectedList.importantInfo) })}</Text>
                 </View>  
                 <View style={styles.textContainerStartDate}>
-                  <Text>{`Start Date: ${selectedList.startAndEndDatesClass?.startDate}`}</Text>
+                  <Text>{t('meds.detailStart', { date: selectedList.startAndEndDatesClass?.startDate })}</Text>
                 </View>
                 <View style={styles.textContainerEndDate}>
-                  <Text>{`End Date: ${selectedList.startAndEndDatesClass?.endDate}`}</Text>
+                  <Text>{t('meds.detailEnd', { date: selectedList.startAndEndDatesClass?.endDate })}</Text>
                 </View>
                 <TouchableOpacity style={styles.textContainerCancelFullList} onPress={handleFullListClose}>
-                <Text style={styles.textCancelFullList}>CANCEL</Text>
+                <Text style={styles.textCancelFullList}>{t('meds.cancel')}</Text>
                 </TouchableOpacity>
                 </ScrollView>
                </View>
@@ -210,13 +213,13 @@ export default function Mymeds() {
           <View style={styles.modalContainerAddListButton}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-                <Text style={styles.modalText}>How do you want to add your medication?</Text>
+                <Text style={styles.modalText}>{t('meds.addHow')}</Text>
                 <View style={styles.modalButtonsContainer}>
                   <TouchableOpacity style={styles.modalButton} onPress={handleScanPress}>
-                    <Text style={styles.modalButtonText}>By Scanning</Text>
+                    <Text style={styles.modalButtonText}>{t('meds.byScanning')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalButton} onPress={handleTypePress}>
-                    <Text style={styles.modalButtonText}>By Typing</Text>
+                    <Text style={styles.modalButtonText}>{t('meds.byTyping')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>

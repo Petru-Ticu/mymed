@@ -13,6 +13,8 @@ import { useMedicalList } from './MedicalListContext';
 import { parseFrequencyText, parseStoredDate } from './utils/frequencyParse';
 import { MEDICATION_UNITS, MEDICATION_FREQUENCIES } from './constants';
 import { styles } from './MedicationTypingPage.styles';
+import { useI18n } from './i18n';
+import { FREQUENCY_PLACEHOLDER, frequencyLabel, unitLabel } from './i18n/labels';
 
 let lastMedicalListId = 0;
 
@@ -34,12 +36,13 @@ export default function MedicationTypingPage() {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
   const isEditMode = route.params?.mode === 'edit';
   const editIndex = route.params?.listIndex;
   const listBeingEdited = route.params?.list;
   const [unitsModalVisible, setUnitsModalVisible] = useState(false); //units modal visible state variable
   const [frequencyModalVisible, setFrequencyModalVisible] = useState(false); //frequency modal visible state variable
-  const [selectedFrequency, setSelectedFrequency] = useState('Frequency of Meds e.g. day/hour etc');
+  const [selectedFrequency, setSelectedFrequency] = useState(FREQUENCY_PLACEHOLDER);
   //The start date and end date variables.
   const [calendarVisible, setCalendarVisible] = useState(false); //for closing and opening the calendar modal state variable
   const [startDate, setStartDate] = useState(null); //for updating the starging date state variable
@@ -253,7 +256,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
   //resets the state variable 'selectedFrequency'
   //to it's initial placeholder text
   const handleResetSelectedFrequency = () => {
-    setSelectedFrequency('Frequency of Meds e.g. day/hour etc');
+    setSelectedFrequency(FREQUENCY_PLACEHOLDER);
 };
 
   //gets the user out of this file if
@@ -371,13 +374,13 @@ if (currentDoneBtn === 'dailyXTimesADay') {
             <MaterialIcons name="arrow-back" size={28} color="#000000" />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerText}>{isEditMode ? 'Edit your Medication' : 'Informations about your Medication'}</Text>
+            <Text style={styles.headerText}>{isEditMode ? t('meds.editTitle') : t('meds.createTitle')}</Text>
           </View>
         </View>
         <ScrollView style={styles.content}>
           <TextInput
             style={styles.inputProductBrand}
-            placeholder="Name/Brand of the product"
+            placeholder={t('meds.namePlaceholder')}
             placeholderTextColor="#000000"
             keyboardType="default"
             maxLength={35}
@@ -391,9 +394,9 @@ if (currentDoneBtn === 'dailyXTimesADay') {
             <View style={styles.measurementContainer}>
               <TextInput
                 style={styles.measurementInput}
-                placeholder="Unit (e.g., mg, ml, ui)"
+                placeholder={t('meds.unitPlaceholder')}
                 placeholderTextColor="#000000"
-                value={selectedMeasurement}
+                value={selectedMeasurement ? unitLabel(selectedMeasurement) : ''}
                 editable={false}
               />
               <TouchableOpacity onPress={() => setUnitsModalVisible(true)} style={styles.measurementButton}>
@@ -404,7 +407,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
           <View style={styles.frequencyContainer}>
           <View style={styles.frequencyInput}>
     <Text style={smallText ? styles.smallText : styles.normalText}>
-      {selectedFrequency}
+      {selectedFrequency === FREQUENCY_PLACEHOLDER ? t('meds.frequencyPlaceholder') : selectedFrequency}
     </Text>
   </View>
     <TouchableOpacity onPress={() => setFrequencyModalVisible(true)} style={styles.frequencyButton}>
@@ -413,7 +416,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
           </View>
         <TextInput
          style={styles.instructionsInput}
-         placeholder="Important Information"
+         placeholder={t('meds.importantPlaceholder')}
          placeholderTextColor="#000000"
          keyboardType="default"
          multiline={true}
@@ -428,10 +431,10 @@ if (currentDoneBtn === 'dailyXTimesADay') {
   {/*here the date function opens the date modal*/}
     <TouchableOpacity onPress={handleDateButtonPress} style={styles.dateButton}>
         <Text style={styles.dateButtonText}>
-            {startDate ? `Start Date: ${startDate.format('DD.MM.YYYY')}` : 'Start Date:'}
+            {startDate ? t('meds.startDateValue', { date: startDate.format('DD.MM.YYYY') }) : t('meds.startDate')}
         </Text>
         <Text style={styles.dateButtonText}>
-            {endDate ? `End Date: ${endDate.format('DD.MM.YYYY')}` : 'End Date:'}
+            {endDate ? t('meds.endDateValue', { date: endDate.format('DD.MM.YYYY') }) : t('meds.endDate')}
         </Text>
     </TouchableOpacity>
 </View>
@@ -439,7 +442,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
     <View style={styles.medListButtonContainer}>
       <TouchableOpacity style={styles.medListButton} onPress={createMedicalList}>
         <Text style={styles.medListButtonTex}>
-            {isEditMode ? 'Save Medical List' : 'Create Medical List'}
+            {isEditMode ? t('meds.saveList') : t('meds.createList')}
         </Text>
       </TouchableOpacity>
     </View>
@@ -459,7 +462,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
      onPress={() => handleMeasurementPress(unit)} //where it activates the select mesurement function
      style={[styles.modalItem, index === units.length - 1 && styles.lastModalItem]}
     >
-<Text style={styles.modalItemText}>{unit}</Text>
+<Text style={styles.modalItemText}>{unitLabel(unit)}</Text>
     </TouchableOpacity>
 ))}
     </ScrollView>
@@ -480,7 +483,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
                     onPress={() => handleFrequencyPress(frequency)}
                     style={styles.modalItem}
                     >
-                        <Text style={styles.modalItemText}>{frequency}</Text>
+                        <Text style={styles.modalItemText}>{frequencyLabel(frequency)}</Text>
                     </TouchableOpacity>
 ))}
                 </ScrollView>
@@ -544,7 +547,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
                     nextTitle=">"
                     />
                         <TouchableOpacity onPress={handleConfirmDates} style={styles.confirmButton}>
-                            <Text style={styles.confirmButtonText}>CONFIRM DATES</Text>
+                            <Text style={styles.confirmButtonText}>{t('meds.confirmDates')}</Text>
                         </TouchableOpacity>
                 </View>
             </View>

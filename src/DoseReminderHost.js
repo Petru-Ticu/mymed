@@ -7,6 +7,8 @@ import { sanitizeDoseCount } from './utils/doseCountInput';
 import { getActiveRouteName } from './navigation/navigationRef';
 import { classifyInventory } from './frequencyHandlers';
 import { lastAsNeededStep } from './notificationItems';
+import { useI18n } from './i18n';
+import { unitLabel } from './i18n/labels';
 import {
   notifyInventoryOnPhone,
   syncScheduledDoseAlerts,
@@ -58,6 +60,7 @@ function ActionModal({ visible, title, children, buttons }) {
 
 export default function DoseReminderHost({ children }) {
   const { medicalLists, setMedicalLists } = useMedicalList();
+  const { t } = useI18n();
 
   const [queue, setQueue] = useState([]);
   const [asNeededList, setAsNeededList] = useState(null);
@@ -254,9 +257,9 @@ export default function DoseReminderHost({ children }) {
     setter([]);
   };
 
-  const unit = current?.unit || 'unit(s)';
+  const unit = unitLabel(current?.unit || 'unit(s)');
   const scheduledTitle = current
-    ? `Take ${current.quantity} ${unit} of ${current.productName}!`
+    ? t('dose.takeTitle', { quantity: current.quantity, unit, name: current.productName })
     : '';
 
   return (
@@ -266,26 +269,26 @@ export default function DoseReminderHost({ children }) {
         visible={showScheduled}
         title={scheduledTitle}
         buttons={[
-          { label: 'OK', color: '#5CA65C', onPress: () => answerScheduled(true) },
-          { label: 'NO', color: '#E53935', onPress: () => answerScheduled(false) },
+          { label: t('dose.ok'), color: '#5CA65C', onPress: () => answerScheduled(true) },
+          { label: t('dose.no'), color: '#E53935', onPress: () => answerScheduled(false) },
         ]}
       />
 
       <ActionModal
         visible={showAsNeeded && asNeededStep === 'confirm'}
-        title={`You want to take ${asNeededList?.productName}?`}
+        title={t('dose.asNeededConfirm', { name: asNeededList?.productName })}
         buttons={[
-          { label: 'YES', color: '#5CA65C', onPress: confirmAsNeededYes },
-          { label: 'NO', color: '#E53935', onPress: closeAsNeeded },
+          { label: t('dose.yes'), color: '#5CA65C', onPress: confirmAsNeededYes },
+          { label: t('dose.no'), color: '#E53935', onPress: closeAsNeeded },
         ]}
       />
 
       <ActionModal
         visible={showAsNeeded && asNeededStep === 'quantity'}
-        title={`How many ${asNeededList?.productName} you want to take?`}
+        title={t('dose.asNeededQty', { name: asNeededList?.productName })}
         buttons={[
-          { label: 'OK', color: '#5CA65C', onPress: confirmAsNeededOk },
-          { label: 'CANCEL', color: '#E53935', onPress: closeAsNeeded },
+          { label: t('dose.ok'), color: '#5CA65C', onPress: confirmAsNeededOk },
+          { label: t('dose.cancel'), color: '#E53935', onPress: closeAsNeeded },
         ]}
       >
         <TextInput
@@ -307,9 +310,9 @@ export default function DoseReminderHost({ children }) {
 
       <ActionModal
         visible={approachVisible}
-        title={`${formatProductNames(approachWarnings.map((item) => item.name))} is two doses away from your refill point. Please plan to get more.`}
+        title={t('dose.approaching', { names: formatProductNames(approachWarnings.map((item) => item.name)) })}
         buttons={[{
-          label: 'OK',
+          label: t('dose.ok'),
           color: colors.accent,
           textColor: colors.text,
           onPress: () => dismissWarnings(approachWarnings, setApproachWarnings),
@@ -318,9 +321,9 @@ export default function DoseReminderHost({ children }) {
 
       <ActionModal
         visible={refillVisible}
-        title={`You need to get more Meds into your ${formatProductNames(refillWarnings.map((item) => item.name))} Inventory!`}
+        title={t('dose.refill', { names: formatProductNames(refillWarnings.map((item) => item.name)) })}
         buttons={[{
-          label: 'OK',
+          label: t('dose.ok'),
           color: colors.accent,
           textColor: colors.text,
           onPress: () => dismissWarnings(refillWarnings, setRefillWarnings),
@@ -329,9 +332,9 @@ export default function DoseReminderHost({ children }) {
 
       <ActionModal
         visible={emptyVisible}
-        title={`You need to add med/s to your Inventory because the ${formatProductNames(emptyWarnings.map((item) => item.name))} are empty!`}
+        title={t('dose.empty', { names: formatProductNames(emptyWarnings.map((item) => item.name)) })}
         buttons={[{
-          label: 'OK',
+          label: t('dose.ok'),
           color: colors.accent,
           textColor: colors.text,
           onPress: () => dismissWarnings(emptyWarnings, setEmptyWarnings),

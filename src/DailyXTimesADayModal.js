@@ -7,8 +7,10 @@ import { ERRORS_DAILY_X_TIMES_A_DAY, ERROR_MESSAGES_MODS_REMS } from './constant
 import { sanitizeDoseCount } from './utils/doseCountInput';
 import { inventoryValue } from './utils/frequencyParse';
 import { isValidHour, isValidMinute, sortTimesList } from './utils/inputRules';
-import { styles } from './DailyXTimesADayModal.styles';
+import FieldError from './FieldError';
+import { useI18n } from './i18n';
 import FrequencyModalLayout from './FrequencyModalLayout';
+import { styles } from './DailyXTimesADayModal.styles';
 import ModalsReminders from './ModalsReminders';
 import { saveFrequencyDraft, getFrequencyDraft,
   saveFrequencyDone, getFrequencyDone } from './frequencyDraft';
@@ -23,6 +25,7 @@ export default function DailyXTimesADayModal({
   handleDailyXTimesADayChanges, setDailyXTimesADayDetails, handleDonePress,
   initialDailyDraft
 }) {
+  const { t } = useI18n();
 
   const modalNameDailyXTimesADay = "Daily X Times a Day";
   const [inputTimesValuesError, setInputTimesValuesError] = useState('');
@@ -227,7 +230,7 @@ useEffect(() => {
 }, [timeInputs, inputValueTimesPerDayDXTAD]); // Depend on inputValueTimesPerDay as well
 
 
-const errorMessageExceedsNineNine = exceeds99 ? ERRORS_DAILY_X_TIMES_A_DAY.exelOfNineNineBoxes.replace('{count}', totalMedsIntake) : '';
+const errorMessageExceedsNineNine = exceeds99 ? ERRORS_DAILY_X_TIMES_A_DAY.exelOfNineNineBoxes : '';
 
 
 // Check for empty times after modifications to relevant dat
@@ -410,14 +413,14 @@ if (!formattedTimesList.every(t => t.time !== "" && t.meds !== "")) {
       onRequestClose={handleBackPressDailyXTimesADay}
     >
       <FrequencyModalLayout
-        title="Necessary Questions"
+        title={t('meds.necessaryQuestions')}
         onBackPress={handleBackPressDailyXTimesADay}
         onDonePress={onDonePressDailyXTimesADay} // You might need to adjust this to fit your logic
       >
             <Text 
               style={styles.modalQuestion}
             >
-              How many times a day is your Medicine Intake?
+              {t('meds.timesPerDay')}
             </Text>
             <TextInput 
               style={[styles.inputIntakeVal, {borderColor: inputTimesValuesError ? 'red' : "#000000", borderWidth: inputTimesValuesError ? 2 : 1}]}
@@ -428,31 +431,19 @@ if (!formattedTimesList.every(t => t.time !== "" && t.meds !== "")) {
             />
 
           <View style={styles.errorContainerDeletedTimeValuesIntakeDailyXTAD}>
-          {inputTimesValuesError && 
-            <Text style={[styles.errorText, {
-              color: inputTimesValuesError ? 'red' : 'transparent',
-            }]}>{inputTimesValuesError}</Text>
-          }
+          {inputTimesValuesError ? <FieldError message={inputTimesValuesError} /> : null}
           </View>
           <View style={styles.errorContainerTimeValuesIntakeDailyXTAD}>
-            {duplicateTimeValuesError && ( <Text style={[styles.errorText, {
-              color: duplicateTimeValuesError ? 'red' : 'transparent',
-            }]}>{ERRORS_DAILY_X_TIMES_A_DAY.duplicateTimeValues}</Text>)}
+            {duplicateTimeValuesError ? <FieldError message={ERRORS_DAILY_X_TIMES_A_DAY.duplicateTimeValues} /> : null}
           </View>
           <View style={styles.errorContainerMedsNumberSum}>
-            {exceeds99 && ( <Text style={[styles.errorText, {
-              color: exceeds99 ? 'red' : 'transparent',
-            }]}>{errorMessageExceedsNineNine}</Text>)}
+            {exceeds99 ? <FieldError message={errorMessageExceedsNineNine} vars={{ count: totalMedsIntake }} /> : null}
           </View>
           <View style={styles.errorContainerHourAndMinute}>
-          {emptyTimeError && ( <Text style={[styles.errorText, {
-            color: emptyTimeError ? 'red' : 'transparent',
-          }]}>{ERRORS_DAILY_X_TIMES_A_DAY.timeValuesAreEmpty}</Text>)}
+          {emptyTimeError ? <FieldError message={ERRORS_DAILY_X_TIMES_A_DAY.timeValuesAreEmpty} /> : null}
           </View>
           <View style={styles.errorContainerMeds}>
-          {emptyMedsError && ( <Text style={[styles.errorText, {
-            color: emptyMedsError ? 'red' : 'trasparent',
-          }]}>{ERRORS_DAILY_X_TIMES_A_DAY.medsValuesAreEmpty}</Text>)}
+          {emptyMedsError ? <FieldError message={ERRORS_DAILY_X_TIMES_A_DAY.medsValuesAreEmpty} /> : null}
           </View>
 
           {timeInputs.slice(0, Number(inputValueTimesPerDayDXTAD) || 0).map((time, index, array) => (
@@ -514,14 +505,10 @@ if (!formattedTimesList.every(t => t.time !== "" && t.meds !== "")) {
           <View style={{ marginBottom: 35 }}></View>
 
           <View style={styles.errorContainerHourAndMinuteBottom}>
-          {emptyTimeError && ( <Text style={[styles.errorText, {
-            color: emptyTimeError ? 'red' : 'transparent',
-          }]}>{ERRORS_DAILY_X_TIMES_A_DAY.timeValuesAreEmpty}</Text>)}
+          {emptyTimeError ? <FieldError message={ERRORS_DAILY_X_TIMES_A_DAY.timeValuesAreEmpty} /> : null}
           </View>
           <View style={styles.errorContainerMedsBottom}>
-          {emptyMedsError && ( <Text style={[styles.errorText, {
-            color: emptyMedsError ? 'red' : 'trasparent',
-          }]}>{ERRORS_DAILY_X_TIMES_A_DAY.medsValuesAreEmpty}</Text>)}
+          {emptyMedsError ? <FieldError message={ERRORS_DAILY_X_TIMES_A_DAY.medsValuesAreEmpty} /> : null}
           </View>
 
           <ModalsReminders 

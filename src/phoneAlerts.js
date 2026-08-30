@@ -1,6 +1,9 @@
 import { Platform } from 'react-native';
 import { colors } from './theme/colors';
 import { getUpcomingOccurrences } from './frequencyHandlers';
+import { t } from './i18n';
+import { unitLabel } from './i18n/labels';
+import { sessionStore } from './userStore';
 
 let Notifications = null;
 try {
@@ -28,7 +31,7 @@ async function ensureReady() {
   }
   if (Platform.OS === 'android' && Notifications.setNotificationChannelAsync) {
     await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL, {
-      name: 'Medicine reminders',
+      name: t('phone.channelName'),
       importance: Notifications.AndroidImportance?.HIGH ?? 4,
       color: colors.accent,
       vibrationPattern: [0, 250, 250, 250],
@@ -63,6 +66,9 @@ export async function syncScheduledDoseAlerts(lists, now = new Date()) {
   }
   await Notifications.dismissAllNotificationsAsync?.();
   await Notifications.cancelAllScheduledNotificationsAsync();
+  if (!sessionStore.notifyOneMinuteBefore) {
+    return;
+  }
   const horizon = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
   for (const list of lists || []) {
     const upcoming = getUpcomingOccurrences(list, now, 20);
@@ -76,8 +82,12 @@ export async function syncScheduledDoseAlerts(lists, now = new Date()) {
       }
       await Notifications.scheduleNotificationAsync({
         content: content({
-          title: 'Take your medicine in 1 minute',
-          body: `In 1 minute, take ${item.quantity} ${item.unit} of ${item.productName}.`,
+          title: t('phone.inOneMinuteTitle'),
+          body: t('phone.inOneMinuteBody', {
+            quantity: item.quantity,
+            unit: unitLabel(item.unit),
+            name: item.productName,
+          }),
         }),
         trigger: oneMinuteBefore,
       });
@@ -90,14 +100,21 @@ export async function notifyInventoryOnPhone(warning) {
     return;
   }
   const bodies = {
-    approaching: `${warning.name} is two doses away from your refill point (${warning.threshold} left). You have ${warning.amount} now. Get more soon.`,
-    atThreshold: `${warning.name} is at your refill point (${warning.amount} left). Please get more.`,
-    empty: `${warning.name} has none left. Add more to your inventory.`,
+    approaching: t('phone.approachingBody', {
+      name: warning.name,
+      threshold: warning.threshold,
+      amount: warning.amount,
+    }),
+    atThreshold: t('phone.atThresholdBody', {
+      name: warning.name,
+      amount: warning.amount,
+    }),
+    empty: t('phone.emptyBody', { name: warning.name }),
   };
   const titles = {
-    approaching: 'Your medicine is getting low',
-    atThreshold: 'Time to refill your medicine',
-    empty: 'Your medicine is empty',
+    approaching: t('phone.approachingTitle'),
+    atThreshold: t('phone.atThresholdTitle'),
+    empty: t('phone.emptyTitle'),
   };
   await Notifications.scheduleNotificationAsync({
     content: content({

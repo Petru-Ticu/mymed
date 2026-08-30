@@ -93,7 +93,6 @@ timeInputContainer: {
     marginVertical: 20,
   },
   errorText: {
-    color: 'red',
     height: 40,
     lineHeight: 20,
     marginBottom: 30,

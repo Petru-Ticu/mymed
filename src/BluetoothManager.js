@@ -1,5 +1,6 @@
 import { BleManager } from 'react-native-ble-plx';
 import { PermissionsAndroid, Platform, Alert, NativeModules } from 'react-native';
+import { t } from './i18n';
 
 let manager = null;
 
@@ -23,8 +24,8 @@ export const startBluetoothScan = async (onHeartRateUpdate) => {
   const bleManager = getBleManager();
   if (!bleManager) {
     Alert.alert(
-      'Bluetooth not available',
-      'Heart rate needs a development build. Expo Go does not include the BLE native module.'
+      t('ble.unavailableTitle'),
+      t('ble.unavailableBody')
     );
     return false;
   }
@@ -33,22 +34,22 @@ export const startBluetoothScan = async (onHeartRateUpdate) => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: 'Location Permission',
-        message: 'This app needs location permission to scan for Bluetooth devices.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
+        title: t('ble.locationTitle'),
+        message: t('ble.locationBody'),
+        buttonNeutral: t('ble.askLater'),
+        buttonNegative: t('ble.cancel'),
+        buttonPositive: t('ble.ok'),
       }
     );
 
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-      Alert.alert('Permission Denied', 'Location permission is required to scan for Bluetooth devices.');
+      Alert.alert(t('ble.permissionDeniedTitle'), t('ble.permissionDeniedBody'));
       return false;
     }
   } else if (Platform.OS === 'ios') {
     bleManager.onStateChange((state) => {
       if (state !== 'PoweredOn') {
-        Alert.alert('Bluetooth is off', 'Please enable Bluetooth to connect to your smartwatch.');
+        Alert.alert(t('ble.bluetoothOffTitle'), t('ble.bluetoothOffBody'));
         return false;
       }
     }, true);

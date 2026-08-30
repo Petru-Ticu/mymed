@@ -13,11 +13,13 @@ import {
   getTodayDoseSummary,
   subscribeMedicationHistory,
 } from './medicationDoseActions';
+import { useI18n } from './i18n';
 
 const chartWidth = Dimensions.get('window').width - 48;
 
 export default function Myanalytics() {
   const { medicalLists } = useMedicalList();
+  const { t } = useI18n();
   const [isConnected, setIsConnected] = useState(false);
   const [heartRateData, setHeartRateData] = useState([]);
   const [today, setToday] = useState(getTodayDoseSummary());
@@ -46,23 +48,23 @@ export default function Myanalytics() {
       if (success) {
         setIsConnected(true);
       } else {
-        Alert.alert('Connection Failed', 'Could not connect to the smartwatch.');
+        Alert.alert(t('analytics.connectFailed'), t('analytics.connectFailedBody'));
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('analytics.error'), error.message);
     }
   };
 
   const pieData = [
     {
-      name: 'Taken',
+      name: t('analytics.pieTaken'),
       population: today.taken,
       color: '#5CA65C',
       legendFontColor: colors.text,
       legendFontSize: 16,
     },
     {
-      name: 'Missed',
+      name: t('analytics.pieMissed'),
       population: today.skipped,
       color: '#E53935',
       legendFontColor: colors.text,
@@ -73,9 +75,9 @@ export default function Myanalytics() {
   return (
     <AppScreen>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Your medicine today</Text>
-        <Text style={styles.bigNumber}>Taken: {today.taken}</Text>
-        <Text style={styles.bigNumber}>Missed: {today.skipped}</Text>
+        <Text style={styles.heading}>{t('analytics.headingToday')}</Text>
+        <Text style={styles.bigNumber}>{t('analytics.taken', { count: today.taken })}</Text>
+        <Text style={styles.bigNumber}>{t('analytics.missed', { count: today.skipped })}</Text>
 
         {pieData.length > 0 ? (
           <PieChart
@@ -91,12 +93,12 @@ export default function Myanalytics() {
             absolute
           />
         ) : (
-          <Text style={styles.empty}>No take or skip records yet today.</Text>
+          <Text style={styles.empty}>{t('analytics.emptyToday')}</Text>
         )}
 
-        <Text style={styles.heading}>What you did</Text>
+        <Text style={styles.heading}>{t('analytics.headingDid')}</Text>
         {recent.length === 0 ? (
-          <Text style={styles.empty}>When you take or skip a medicine, it will show up here.</Text>
+          <Text style={styles.empty}>{t('analytics.emptyDid')}</Text>
         ) : (
           recent.map((event, index) => (
             <View key={`${event.listId}-${event.answeredAt?.iso}-${index}`} style={styles.eventCard}>
@@ -107,7 +109,7 @@ export default function Myanalytics() {
 
         <View style={styles.watchBlock}>
           {!isConnected ? (
-            <Button title="Connect to Smartwatch" onPress={handleConnectPress} />
+            <Button title={t('analytics.connectWatch')} onPress={handleConnectPress} />
           ) : (
             <HeartRatePanel heartRateData={heartRateData} />
           )}

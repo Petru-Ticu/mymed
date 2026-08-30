@@ -35,6 +35,18 @@ export function getFrequencyType(list) {
   return null;
 }
 
+function uniqueTimedSlots(slots) {
+  const seen = new Set();
+  return (slots || []).filter((slot) => {
+    const time = slot?.time;
+    if (!time || seen.has(time)) {
+      return false;
+    }
+    seen.add(time);
+    return true;
+  });
+}
+
 function getTimedSlotsFromText(modalFrequency) {
   const text = String(modalFrequency || '');
   const slots = [];
@@ -49,18 +61,18 @@ function getTimedSlotsFromText(modalFrequency) {
       quantity: Number(match[3]) || 0,
     });
   }
-  return slots;
+  return uniqueTimedSlots(slots);
 }
 
 function defaultGetTimedSlots(list) {
   const parsed = parseFrequencyText(list?.modalFrequency);
   const rendered = parsed.details?.timesAndMedsRenderedList;
   if (rendered?.length) {
-    return rendered.map((slot) => ({
+    return uniqueTimedSlots(rendered.map((slot) => ({
       position: slot.position || 0,
       time: slot.time,
       quantity: Number(slot.meds) || 0,
-    }));
+    })));
   }
   return getTimedSlotsFromText(list?.modalFrequency);
 }
@@ -84,6 +96,28 @@ export function isDateInListRange(list, date) {
     return false;
   }
   return true;
+}
+
+export function listHasOpenSchedule(list) {
+  const { start, end } = getListRange(list);
+  return !start && !end;
+}
+
+// Inbox / Home: today's remaining times. If the list has no start or end date,
+// also show the next calendar day that has a dose (any future frequency).
+export function getInboxUpcomingOccurrences(list, now = new Date()) {
+  const upcoming = getUpcomingOccurrences(list, now, 99);
+  const today = startOfDay(now).getTime();
+  const todayItems = upcoming.filter((item) => startOfDay(item.at).getTime() === today);
+  if (!listHasOpenSchedule(list)) {
+    return todayItems;
+  }
+  const later = upcoming.filter((item) => startOfDay(item.at).getTime() > today);
+  if (!later.length) {
+    return todayItems;
+  }
+  const nextDay = startOfDay(later[0].at).getTime();
+  return todayItems.concat(later.filter((item) => startOfDay(item.at).getTime() === nextDay));
 }
 
 function combineDateAndTime(day, hhmm) {

@@ -44,12 +44,11 @@ export const styles = StyleSheet.create({
         marginTop: 27,
         marginBottom: 10,
     },
-    errorText: {
-        //color: 'red',
-        fontSize: 14,
-        marginLeft: 10,
-        marginTop: 5,
-    },
+  errorText: {
+    fontSize: 14,
+    marginLeft: 10,
+    marginTop: 5,
+  },
     errorContainerAmount: {
         height: 60,
     },

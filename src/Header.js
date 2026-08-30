@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppNavigation } from './navigation/useAppNavigation';
 import { useNotificationItems } from './notificationItems';
+import { accountStore, subscribeUserStore } from './userStore';
 import { colors } from './theme/colors';
+import { useI18n } from './i18n';
 
 export default function Header() {
   const { handleAccountPress, handleNotificationsPress, email } = useAppNavigation();
   const { badgeCount } = useNotificationItems();
+  const { t } = useI18n();
+  const [firstName, setFirstName] = useState(accountStore.firstName);
+
+  useEffect(() => subscribeUserStore(() => {
+    setFirstName(accountStore.firstName);
+  }), []);
+
+  const headerName = firstName || email;
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
@@ -17,8 +27,8 @@ export default function Header() {
           <View style={styles.accountIcon}>
             <Ionicons name="person-circle-outline" size={55} color={colors.text} />
             <View style={styles.accountTextContainer}>
-              <Text style={styles.accountText}>Account Settings</Text>
-              {email ? <Text style={styles.accountText}>{email}</Text> : null}
+              <Text style={styles.accountText}>{t('header.accountSettings')}</Text>
+              {headerName ? <Text style={styles.accountText}>{headerName}</Text> : null}
             </View>
           </View>
         </Pressable>
@@ -27,8 +37,8 @@ export default function Header() {
           style={styles.notificationsButton}
           accessibilityLabel={
             badgeCount > 0
-              ? `Notifications, ${badgeCount} need attention`
-              : 'Notifications'
+              ? t('header.notificationsBadge', { count: badgeCount })
+              : t('header.notifications')
           }
         >
           <Ionicons name="notifications-outline" size={30} color={colors.text} />
