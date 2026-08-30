@@ -1,0 +1,112 @@
+diff --git a/node_modules/react-native-calendar-picker/CalendarPicker/Day.js b/node_modules/react-native-calendar-picker/CalendarPicker/Day.js
+index 0cb9fe6..9d61055 100644
+--- a/node_modules/react-native-calendar-picker/CalendarPicker/Day.js
++++ b/node_modules/react-native-calendar-picker/CalendarPicker/Day.js
+@@ -13,7 +13,6 @@ export default function Day(props) {
+     month,
+     year,
+     styles,
+-    customDatesStyles,
+     onPressDay,
+     selectedStartDate,
+     selectedEndDate,
+@@ -23,6 +22,7 @@ export default function Day(props) {
+     selectedRangeStartStyle,
+     selectedRangeStyle,
+     selectedRangeEndStyle,
++    customDatesStyles = [],
+     textStyle,
+     todayTextStyle,
+     minDate,
+@@ -204,10 +204,6 @@ export default function Day(props) {
+   }
+ }
+ 
+-Day.defaultProps = {
+-  customDatesStyles: [],
+-};
+-
+ Day.propTypes = {
+   styles: PropTypes.shape({}),
+   day: PropTypes.number,
+diff --git a/node_modules/react-native-calendar-picker/CalendarPicker/DaysGridView.js b/node_modules/react-native-calendar-picker/CalendarPicker/DaysGridView.js
+index 738a335..35d5207 100644
+--- a/node_modules/react-native-calendar-picker/CalendarPicker/DaysGridView.js
++++ b/node_modules/react-native-calendar-picker/CalendarPicker/DaysGridView.js
+@@ -3,7 +3,6 @@ import uuid from 'uuid/v4';
+ import {
+   View,
+   Text,
+-  ViewPropTypes as RNViewPropTypes,
+ } from 'react-native';
+ import PropTypes from 'prop-types';
+ import Day from './Day';
+@@ -11,7 +10,7 @@ import EmptyDay from './EmptyDay';
+ import { Utils } from './Utils';
+ import moment from 'moment';
+ 
+-const ViewPropTypes = RNViewPropTypes || View.propTypes;
++const stylePropType = PropTypes.any;
+ 
+ export default function DaysGridView(props) {
+   const {
+@@ -183,11 +182,11 @@ DaysGridView.propTypes = {
+   year: PropTypes.number.isRequired,
+   onPressDay: PropTypes.func,
+   startFromMonday: PropTypes.bool,
+-  selectedDayStyle: ViewPropTypes.style,
+-  selectedRangeStartStyle: ViewPropTypes.style,
+-  selectedRangeStyle: ViewPropTypes.style,
+-  selectedRangeEndStyle: ViewPropTypes.style,
+-  todayTextStyle: Text.propTypes.style,
++  selectedDayStyle: stylePropType,
++  selectedRangeStartStyle: stylePropType,
++  selectedRangeStyle: stylePropType,
++  selectedRangeEndStyle: stylePropType,
++  todayTextStyle: stylePropType,
+   customDatesStyles: PropTypes.oneOfType([
+     PropTypes.func,
+     PropTypes.arrayOf(PropTypes.shape({
+@@ -196,13 +195,13 @@ DaysGridView.propTypes = {
+         PropTypes.instanceOf(Date),
+         PropTypes.instanceOf(moment)
+       ]),
+-      containerStyle: ViewPropTypes.style,
+-      style: ViewPropTypes.style,
+-      textStyle: Text.propTypes.style,
++      containerStyle: stylePropType,
++      style: stylePropType,
++      textStyle: stylePropType,
+     })),
+   ]),
+   disabledDates: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
+-  disabledDatesTextStyle: Text.propTypes.style,
++  disabledDatesTextStyle: stylePropType,
+   minRangeDuration: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+   maxRangeDuration: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+ };
+diff --git a/node_modules/react-native-calendar-picker/CalendarPicker/MonthsHeader.js b/node_modules/react-native-calendar-picker/CalendarPicker/MonthsHeader.js
+index 0e3fad0..fde6083 100644
+--- a/node_modules/react-native-calendar-picker/CalendarPicker/MonthsHeader.js
++++ b/node_modules/react-native-calendar-picker/CalendarPicker/MonthsHeader.js
+@@ -30,6 +30,6 @@ export default function MonthsHeader(props) {
+ 
+ MonthsHeader.propTypes = {
+   styles: PropTypes.shape(),
+-  textStyle: Text.propTypes.style,
++  textStyle: PropTypes.any,
+   title: PropTypes.string
+ };
+diff --git a/node_modules/react-native-calendar-picker/CalendarPicker/YearsHeader.js b/node_modules/react-native-calendar-picker/CalendarPicker/YearsHeader.js
+index f80ecc9..8ff785a 100644
+--- a/node_modules/react-native-calendar-picker/CalendarPicker/YearsHeader.js
++++ b/node_modules/react-native-calendar-picker/CalendarPicker/YearsHeader.js
+@@ -62,7 +62,7 @@ export default function YearsHeader(props) {
+ 
+ YearsHeader.propTypes = {
+   styles: PropTypes.shape(),
+-  textStyle: Text.propTypes.style,
++  textStyle: PropTypes.any,
+   title: PropTypes.string,
+   onYearViewNext: PropTypes.func,
+   onYearViewPrevious: PropTypes.func,

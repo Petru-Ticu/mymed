@@ -1,3 +1,4 @@
+// Parses Amount / Threshold out of the stored frequency string and applies a taken dose.
 const AMOUNT_PATTERN = /Amount:\s*(Null|-?\d+)/i;
 const THRESHOLD_PATTERN = /Threshold:\s*(Null|-?\d+)/i;
 

@@ -1,4 +1,27 @@
 {
   "name": "app_doidoicinci",
-  "displayName": "app_doidoicinci"
+  "slug": "app_doidoicinci",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "userInterfaceStyle": "light",
+  "newArchEnabled": true,
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.anonymous.app-doidoicinci"
+  },
+  "android": {
+    "adaptiveIcon": {
+      "backgroundColor": "#ffffff"
+    },
+    "package": "com.anonymous.app_doidoicinci"
+  },
+  "plugins": [
+    [
+      "expo-notifications",
+      {
+        "color": "#D1FFD1",
+        "defaultChannel": "medicine-reminders"
+      }
+    ]
+  ]
 }
