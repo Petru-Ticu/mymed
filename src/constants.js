@@ -33,6 +33,7 @@ const ERRORS_WELCOME_SCREEN = {
 const ERRORS_ACCOUNT_SETTINGS = {
   firstNameEmpty: 'errors.account.firstNameEmpty',
   lastNameEmpty: 'errors.account.lastNameEmpty',
+  nameInvalid: 'errors.account.nameInvalid',
   genderEmpty: 'errors.account.genderEmpty',
   birthDateEmpty: 'errors.account.birthDateEmpty',
   birthDateInvalid: 'errors.account.birthDateInvalid',

@@ -98,7 +98,13 @@ export const sessionStore = {
 const userStoreListeners = new Set();
 
 function notifyUserStore() {
-  userStoreListeners.forEach((listener) => listener());
+  userStoreListeners.forEach((listener) => {
+    try {
+      listener();
+    } catch {
+      // A bad subscriber must not take down account save.
+    }
+  });
 }
 
 export function subscribeUserStore(listener) {
@@ -206,10 +212,5 @@ export const userAppState = {
 
   toJSONString() {
     return JSON.stringify(this.toBackendPayload());
-  },
-
-  debugLog() {
-    console.log('[UserAppState] backend payload');
-    console.log(this.toJSONString());
   },
 };

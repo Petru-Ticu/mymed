@@ -1,4 +1,6 @@
 import { StyleSheet } from 'react-native';
+import { colors } from './theme/colors';
+import { layout } from './theme/layout';
 
 export const styles = StyleSheet.create({
   scrollView: {
@@ -6,7 +8,7 @@ export const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -14,103 +16,48 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 36,
+    width: '100%',
   },
   buttonContainer: {
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingBottom: 50,
+    paddingBottom: 32,
+    width: '100%',
+    paddingHorizontal: 24,
   },
   text: {
     fontSize: 32,
-    color: '#000000',
+    color: colors.text,
     fontWeight: 'bold',
     margin: 10,
   },
   textSL: {
     fontSize: 20,
-    color: '#000000',
+    color: colors.text,
     fontWeight: 'bold',
     margin: 10,
   },
   inputContainer: {
     marginTop: 10,
-    width: '80%',
+    width: '86%',
   },
-  input: {
-    height: 40,
-    borderColor: '#000000',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 16,
-  },
-  emailProvider: {
-    marginTop: 10,
-    height: 44,
-    width: 300,
-    //borderColor: '#ffffff',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 16,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  providersTexts: {
-    fontSize: 15.5,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  appleProvider: {
-    backgroundColor: 'gray',
-    borderColor: 'gray',
-  },
-  googleProvider: {
-    backgroundColor: '#ffffff',
-    borderColor: '#ffffff',
-  },
-  microsoftOutlookProvider: {
-    backgroundColor: '#0078D4',
-    borderColor: '#0078D4',
-  },
-  yahooProvider: {
-    backgroundColor: '#410093',
-    borderColor: '#410093',
-  },
-  textPressable: {
-    fontSize: 30,
-    color: '#000000'
-  },
-  pressableWelcome: {
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  pressableBackground: {
-    backgroundColor: '#D1FFD1',
-    paddingHorizontal: 75,
-    paddingVertical: 8,
-    borderRadius: 8,
-    elevation: 3,
-  },
-  pressableBackgroundHovered: {
-    backgroundColor: '#ffffff',
-  },
-  errorText: {
-    fontSize: 12,
-    marginTop: -15,
-    marginBottom: 10,
-  },
-  selectLangBtn: {
-    backgroundColor: '#ffffff',
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    width: 100,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+  languageRow: {
     marginTop: 8,
-  }
+    marginBottom: 16,
+  },
+  languageLabel: {
+    fontSize: 16,
+    color: colors.text,
+    marginBottom: 8,
+  },
+  hint: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  continue: {
+    width: '100%',
+  },
 });
-
-

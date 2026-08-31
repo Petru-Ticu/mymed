@@ -15,10 +15,11 @@ import { MEDICATION_UNITS, MEDICATION_FREQUENCIES } from './constants';
 import { styles } from './MedicationTypingPage.styles';
 import { useI18n } from './i18n';
 import { FREQUENCY_PLACEHOLDER, frequencyLabel, unitLabel } from './i18n/labels';
+import { colors } from './theme/colors';
 
 let lastMedicalListId = 0;
 
-function buildMedicalListEntry(productName, unit, modalFrequency, importantInfo, startAndEndDatesClass) {
+function buildMedicalListEntry(productName, unit, modalFrequency, importantInfo, startAndEndDatesClass, extra = {}) {
   const now = new Date();
   return {
     id: ++lastMedicalListId,
@@ -29,6 +30,7 @@ function buildMedicalListEntry(productName, unit, modalFrequency, importantInfo,
     modalFrequency,
     importantInfo,
     startAndEndDatesClass,
+    ...extra,
   };
 }
 
@@ -63,16 +65,17 @@ export default function MedicationTypingPage() {
   const [productName, setProductName] = useState('');
   const [selectedMeasurement, setSelectedMeasurement] = useState(''); //selecting mesarurement state variable
   const [importantInfo, setImportantInfo] = useState('');
+  const [scannedBarcode, setScannedBarcode] = useState('');
 
   const { setMedicalLists, medicalLists } = useMedicalList();
 
   //navigation funciton to go back
   const handleGoBack = () => {
     navigation.goBack();
-    console.log('Before updating in MedicationTypingPage:', getFrequencyDraft())
+    // console.log('Before updating in MedicationTypingPage:', getFrequencyDraft())
    //saveFrequencyDraft(null);
    resetFrequencyDraft();
-    console.log('After updating in MedicationTypingPage:', getFrequencyDraft())
+    // console.log('After updating in MedicationTypingPage:', getFrequencyDraft())
   };
 
   //selecting measurement from the units list function
@@ -119,7 +122,7 @@ export default function MedicationTypingPage() {
 
 
   const handleDonePress = (modalClass) => {
-    console.log("Received modal class:", JSON.stringify(modalClass), "modal class without JSON.STRINGIFY" ,modalClass);
+    // console.log("Received modal class:", JSON.stringify(modalClass), "modal class without JSON.STRINGIFY" ,modalClass);
 
      // Use getFrequencyDone() to check the current value
 const currentDoneBtn = getFrequencyDone();
@@ -134,7 +137,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
   };
 
   useEffect(() => {
-    console.log("Current timesAndMedsRenderedList:", timesAndMedsRenderedList);
+    // console.log("Current timesAndMedsRenderedList:", timesAndMedsRenderedList);
 }, [timesAndMedsRenderedList]);
 
   
@@ -218,7 +221,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
     };
 
     // Optional: Log the date class object to console or handle it further
-    console.log("Start and End Dates:", startAndEndDatesClass);
+    // console.log("Start and End Dates:", startAndEndDatesClass);
     setStartAndEndDatesClass(newStartAndEndDatesClass);
   };
 
@@ -273,6 +276,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
     setProductName(listBeingEdited.productName || '');
     setSelectedMeasurement(listBeingEdited.unit || '');
     setImportantInfo(listBeingEdited.importantInfo || '');
+    setScannedBarcode(listBeingEdited.barcode || '');
     setStartAndEndDatesClass(listBeingEdited.startAndEndDatesClass || null);
     setStartDate(parseStoredDate(listBeingEdited.startAndEndDatesClass?.startDate));
     setEndDate(parseStoredDate(listBeingEdited.startAndEndDatesClass?.endDate));
@@ -294,6 +298,25 @@ if (currentDoneBtn === 'dailyXTimesADay') {
       saveFrequencyDone('dailyXTimesADay');
     }
   }, [isEditMode, editIndex, listBeingEdited?.id, listBeingEdited?.modalFrequency]);
+
+  useEffect(() => {
+    const scanFill = route.params?.scanFill;
+    if (!scanFill) {
+      return;
+    }
+    if (scanFill.productName) {
+      setProductName(String(scanFill.productName).slice(0, 35));
+    }
+    if (scanFill.unit) {
+      setSelectedMeasurement(scanFill.unit);
+    }
+    if (scanFill.importantInfo) {
+      setImportantInfo(String(scanFill.importantInfo).slice(0, 200));
+    }
+    if (scanFill.barcode) {
+      setScannedBarcode(String(scanFill.barcode));
+    }
+  }, [route.params?.scanFill, route.params?.scanFillAt]);
 
   const createMedicalList = () => {
     if (!currentFrequencyDetails) {
@@ -335,6 +358,7 @@ if (currentDoneBtn === 'dailyXTimesADay') {
         modalFrequency: frequencyDescription,
         importantInfo,
         startAndEndDatesClass,
+        barcode: scannedBarcode || previousList.barcode,
       };
       const nextLists = [...medicalLists];
       nextLists[editIndex] = updatedList;
@@ -349,12 +373,13 @@ if (currentDoneBtn === 'dailyXTimesADay') {
         selectedMeasurement,
         frequencyDescription,
         importantInfo,
-        startAndEndDatesClass
+        startAndEndDatesClass,
+        { barcode: scannedBarcode || undefined }
     );
 
     
     setMedicalLists([newMedicalList, ...medicalLists]);
-    console.log("Newly Created Medical List Entry:", JSON.stringify(newMedicalList));
+    // console.log("Newly Created Medical List Entry:", JSON.stringify(newMedicalList));
     resetFrequencyDraft();
     navigation.goBack();
     // Here, you would typically want to save this `newMedicalList` to state or perform other operations like sending it to a backend server.
@@ -378,18 +403,31 @@ if (currentDoneBtn === 'dailyXTimesADay') {
           </View>
         </View>
         <ScrollView style={styles.content}>
-          <TextInput
-            style={styles.inputProductBrand}
-            placeholder={t('meds.namePlaceholder')}
-            placeholderTextColor="#000000"
-            keyboardType="default"
-            maxLength={35}
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete="off"
-            onChangeText={setProductName}
-            value={productName}
-          />
+          <View style={styles.nameRow}>
+            <TextInput
+              style={styles.inputProductBrand}
+              placeholder={t('meds.namePlaceholder')}
+              placeholderTextColor={colors.textMuted}
+              keyboardType="default"
+              maxLength={35}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="off"
+              onChangeText={setProductName}
+              value={productName}
+            />
+            <TouchableOpacity
+              style={styles.scanNameButton}
+              onPress={() => navigation.navigate('MedicationScan', { fromTyping: true })}
+              accessibilityRole="button"
+              accessibilityLabel={t('meds.scanAgain')}
+            >
+              <MaterialIcons name="photo-camera" size={24} color={colors.text} />
+            </TouchableOpacity>
+          </View>
+          {scannedBarcode ? (
+            <Text style={styles.scannedHint}>{t('meds.scannedCode', { code: scannedBarcode })}</Text>
+          ) : null}
           <View style={styles.unitContainer}>
             <View style={styles.measurementContainer}>
               <TextInput
@@ -399,8 +437,8 @@ if (currentDoneBtn === 'dailyXTimesADay') {
                 value={selectedMeasurement ? unitLabel(selectedMeasurement) : ''}
                 editable={false}
               />
-              <TouchableOpacity onPress={() => setUnitsModalVisible(true)} style={styles.measurementButton}>
-                <MaterialIcons name="arrow-drop-up" size={26} color="#000000" />
+              <TouchableOpacity onPress={() => setUnitsModalVisible(true)} style={styles.measurementButton} accessibilityRole="button" accessibilityLabel={t('meds.unitPlaceholder')}>
+                <MaterialIcons name="expand-more" size={26} color={colors.text} />
               </TouchableOpacity>
             </View>
           </View>
@@ -410,8 +448,8 @@ if (currentDoneBtn === 'dailyXTimesADay') {
       {selectedFrequency === FREQUENCY_PLACEHOLDER ? t('meds.frequencyPlaceholder') : selectedFrequency}
     </Text>
   </View>
-    <TouchableOpacity onPress={() => setFrequencyModalVisible(true)} style={styles.frequencyButton}>
-        <MaterialIcons name="arrow-drop-up" size={26} color="#000000" />
+    <TouchableOpacity onPress={() => setFrequencyModalVisible(true)} style={styles.frequencyButton} accessibilityRole="button" accessibilityLabel={t('meds.frequencyPlaceholder')}>
+        <MaterialIcons name="expand-more" size={26} color={colors.text} />
     </TouchableOpacity>
           </View>
         <TextInput

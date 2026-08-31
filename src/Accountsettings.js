@@ -1,11 +1,20 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { View, Text, KeyboardAvoidingView, ScrollView, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AppScreen from './layout/AppScreen';
 import { useAppNavigation } from './navigation/useAppNavigation';
 import { styles } from './Accountsettings.styles';
-import { accountStore, sessionStore, userAppState } from './userStore';
+import { accountStore, sessionStore } from './userStore';
 import FieldError from './FieldError';
 import { ERRORS_ACCOUNT_SETTINGS } from './constants';
 import { colors } from './theme/colors';
@@ -15,17 +24,19 @@ import {
   getNewPasswordError,
   getRequiredNameError,
   getRetypeNewPasswordError,
+  NAME_CHAR_FILTER,
 } from './utils/inputRules';
 import { useI18n } from './i18n';
+import AppButton from './ui/AppButton';
+import AppTextField from './ui/AppTextField';
+import AppPasswordField from './ui/AppPasswordField';
 
 const NAME_LIMIT = 36;
-const NAME_CHARS = /^[a-zA-Z\s]*$/;
 const GENDERS = [
   { value: 'Male', key: 'account.male' },
   { value: 'Female', key: 'account.female' },
   { value: 'Other', key: 'account.other' },
 ];
-const FOCUS = '#32CD32';
 
 function splitBirthDate(text) {
   const parts = String(text || '').split('/');
@@ -35,14 +46,25 @@ function splitBirthDate(text) {
   return { day: parts[0], month: parts[1], year: parts[2] };
 }
 
-function paperTheme(focused) {
-  return {
-    colors: {
-      primary: focused ? FOCUS : undefined,
-      text: colors.text,
-      placeholder: colors.text,
-    },
-  };
+function WheelColumn({ values, selected, onSelect }) {
+  return (
+    <ScrollView
+      style={styles.datePickerColumn}
+      contentContainerStyle={styles.datePickerColumnContent}
+      nestedScrollEnabled
+      showsVerticalScrollIndicator={false}
+    >
+      {values.map((value) => (
+        <TouchableOpacity
+          key={value}
+          style={[styles.datePickerItem, selected === value ? styles.datePickerItemSelected : null]}
+          onPress={() => onSelect(value)}
+        >
+          <Text style={styles.datePickerText}>{value}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
 }
 
 function AccountField({ label, error, children }) {
@@ -59,30 +81,26 @@ export default function Accountsettings() {
   const { navigation, windowWidth } = useAppNavigation();
   const { t } = useI18n();
   const savedBirth = splitBirthDate(accountStore.birthDate);
+  const fieldWidth = Math.min(320, windowWidth - 48);
 
   const [firstName, setFirstName] = useState(accountStore.firstName);
   const [lastName, setLastName] = useState(accountStore.lastName);
   const [gender, setGender] = useState(accountStore.gender);
   const [birthDate, setBirthDate] = useState(savedBirth);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [retypePassword, setRetypePassword] = useState('');
   const [errors, setErrors] = useState({});
-  const [focus, setFocus] = useState('');
   const [genderOpen, setGenderOpen] = useState(false);
   const [birthOpen, setBirthOpen] = useState(false);
   const [pickedDay, setPickedDay] = useState(savedBirth.day || '1');
   const [pickedMonth, setPickedMonth] = useState(savedBirth.month || '1');
   const [pickedYear, setPickedYear] = useState(savedBirth.year || String(new Date().getFullYear() - 18));
-  const [pickerSize, setPickerSize] = useState({ width: 40, height: 40 });
+  const [saved, setSaved] = useState(false);
+  const [inputsLocked, setInputsLocked] = useState(false);
 
-  const refs = {
-    firstName: useRef(null),
-    lastName: useRef(null),
-    currentPassword: useRef(null),
-    newPassword: useRef(null),
-    retypePassword: useRef(null),
-  };
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const currentPasswordRef = useRef(null);
+  const newPasswordRef = useRef(null);
+  const retypePasswordRef = useRef(null);
 
   const days = useMemo(() => Array.from({ length: 31 }, (_, i) => String(i + 1)), []);
   const months = useMemo(() => Array.from({ length: 12 }, (_, i) => String(i + 1)), []);
@@ -92,74 +110,109 @@ export default function Accountsettings() {
   }, []);
 
   const blurAll = () => {
-    Object.values(refs).forEach((ref) => ref.current?.blur?.());
+    firstNameRef.current?.blur?.();
+    lastNameRef.current?.blur?.();
+    currentPasswordRef.current?.blur?.();
+    newPasswordRef.current?.blur?.();
+    retypePasswordRef.current?.blur?.();
+  };
+
+  const lockTimer = useRef(null);
+
+  const lockInputsBriefly = () => {
+    setInputsLocked(true);
+    if (lockTimer.current) {
+      clearTimeout(lockTimer.current);
+    }
+    lockTimer.current = setTimeout(() => setInputsLocked(false), 400);
+  };
+
+  useEffect(() => () => {
+    if (lockTimer.current) {
+      clearTimeout(lockTimer.current);
+    }
+  }, []);
+
+  const closeGender = (value) => {
+    if (value) {
+      setGender(value);
+      setSaved(false);
+    }
+    Keyboard.dismiss();
+    setGenderOpen(false);
+    lockInputsBriefly();
+  };
+
+  const confirmBirth = () => {
+    Keyboard.dismiss();
+    setBirthDate({ day: pickedDay, month: pickedMonth, year: pickedYear });
+    setSaved(false);
+    setBirthOpen(false);
+    lockInputsBriefly();
   };
 
   const onNameChange = (setter) => (text) => {
-    if (NAME_CHARS.test(text) && text.length <= NAME_LIMIT) {
+    if (NAME_CHAR_FILTER.test(text) && text.length <= NAME_LIMIT) {
       setter(text);
+      setSaved(false);
     }
   };
 
-  const changingPassword = Boolean(currentPassword || newPassword || retypePassword);
-
-  const collectErrors = () => ({
-    firstName: getRequiredNameError(firstName, ERRORS_ACCOUNT_SETTINGS.firstNameEmpty),
-    lastName: getRequiredNameError(lastName, ERRORS_ACCOUNT_SETTINGS.lastNameEmpty),
-    gender: gender ? '' : ERRORS_ACCOUNT_SETTINGS.genderEmpty,
-    birthDate: getBirthDateError(birthDate.day, birthDate.month, birthDate.year),
-    currentPassword: getCurrentPasswordError(currentPassword, sessionStore.password, changingPassword),
-    newPassword: getNewPasswordError(newPassword, changingPassword),
-    retypePassword: getRetypeNewPasswordError(newPassword, retypePassword, changingPassword),
+  const readPasswords = () => ({
+    currentPassword: currentPasswordRef.current?.getValue?.() || '',
+    newPassword: newPasswordRef.current?.getValue?.() || '',
+    retypePassword: retypePasswordRef.current?.getValue?.() || '',
   });
 
+  const collectErrors = () => {
+    const { currentPassword, newPassword, retypePassword } = readPasswords();
+    const changingPassword = Boolean(currentPassword || newPassword || retypePassword);
+    return {
+      firstName: getRequiredNameError(firstName, ERRORS_ACCOUNT_SETTINGS.firstNameEmpty),
+      lastName: getRequiredNameError(lastName, ERRORS_ACCOUNT_SETTINGS.lastNameEmpty),
+      gender: gender ? '' : ERRORS_ACCOUNT_SETTINGS.genderEmpty,
+      birthDate: getBirthDateError(birthDate.day, birthDate.month, birthDate.year),
+      currentPassword: getCurrentPasswordError(currentPassword, sessionStore.password, changingPassword),
+      newPassword: getNewPasswordError(newPassword, changingPassword),
+      retypePassword: getRetypeNewPasswordError(newPassword, retypePassword, changingPassword),
+    };
+  };
+
   const handleSave = () => {
+    const { newPassword } = readPasswords();
     const nextErrors = collectErrors();
     setErrors(nextErrors);
     if (Object.values(nextErrors).some(Boolean)) {
       return;
     }
+    Keyboard.dismiss();
+    blurAll();
+    const changingPassword = Boolean(newPassword);
     const birthDateText = `${birthDate.day}/${birthDate.month}/${birthDate.year}`;
-    accountStore.save({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      gender,
-      birthDate: birthDateText,
-      passwordTyped: changingPassword ? newPassword : undefined,
-    });
-    if (changingPassword) {
-      sessionStore.save({
-        email: sessionStore.email,
-        selectedLanguage: sessionStore.selectedLanguage,
-        password: newPassword,
+    try {
+      accountStore.save({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        gender,
+        birthDate: birthDateText,
+        passwordTyped: changingPassword ? newPassword : undefined,
       });
-    }
-    userAppState.debugLog();
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.navigate('Home', { email: sessionStore.email });
+      if (changingPassword) {
+        sessionStore.save({ password: newPassword });
+      }
+      currentPasswordRef.current?.clear?.();
+      newPasswordRef.current?.clear?.();
+      retypePasswordRef.current?.clear?.();
+      setSaved(true);
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.navigate('Home', { email: sessionStore.email });
+      }
+    } catch {
+      setSaved(false);
     }
   };
-
-  const outline = (key) => (focus === key ? FOCUS : colors.text);
-
-  const nameProps = (key, value, setter, extra = {}) => ({
-    style: [styles.accountInputs, { width: 320, borderColor: outline(key) }],
-    value,
-    mode: 'outlined',
-    maxLength: NAME_LIMIT,
-    autoCorrect: false,
-    autoCapitalize: 'none',
-    ref: refs[key],
-    theme: paperTheme(focus === key),
-    onFocus: () => setFocus(key),
-    onBlur: () => setFocus(''),
-    outlineColor: outline(key),
-    onChangeText: extra.onChangeText || onNameChange(setter),
-    placeholder: extra.placeholder,
-    secureTextEntry: extra.secureTextEntry,
-  });
 
   const genderDisplay = gender === 'Male' ? t('account.male')
     : gender === 'Female' ? t('account.female')
@@ -170,155 +223,149 @@ export default function Accountsettings() {
     ? `${birthDate.day}/${birthDate.month}/${birthDate.year}`
     : '';
 
+  const nameField = (key, value, setter, ref) => (
+    <AppTextField
+      ref={ref}
+      label={t(`account.${key}`)}
+      error={errors[key]}
+      value={value}
+      maxLength={NAME_LIMIT}
+      autoCorrect={false}
+      autoCapitalize="none"
+      placeholder={t(`account.${key}Placeholder`)}
+      onChangeText={onNameChange(setter)}
+      style={{ width: fieldWidth }}
+    />
+  );
+
   return (
     <AppScreen>
-      <KeyboardAvoidingView behavior="padding" style={styles.body}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.body}
+      >
         <ScrollView
           contentContainerStyle={[styles.bodyContent, { justifyContent: 'flex-start', width: windowWidth }]}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <AccountField label={t('account.firstName')} error={errors.firstName}>
-            <TextInput {...nameProps('firstName', firstName, setFirstName, { placeholder: t('account.firstNamePlaceholder') })} />
-          </AccountField>
-          <AccountField label={t('account.lastName')} error={errors.lastName}>
-            <TextInput {...nameProps('lastName', lastName, setLastName, { placeholder: t('account.lastNamePlaceholder') })} />
-          </AccountField>
+          {nameField('firstName', firstName, setFirstName, firstNameRef)}
+          {nameField('lastName', lastName, setLastName, lastNameRef)}
+
           <AccountField label={t('account.gender')} error={errors.gender}>
             <View style={styles.genderPanelOrdering}>
-              <TextInput
-                style={[styles.accountInputs, styles.centeredText, { width: 172.5 }]}
-                value={genderDisplay}
-                mode="outlined"
-                placeholder={t('account.genderPlaceholder')}
-                editable={false}
-                onLayout={(event) => {
-                  const { height } = event.nativeEvent.layout;
-                  setPickerSize({ width: height, height });
-                }}
-                outlineColor={colors.text}
-              />
+              <View style={[styles.readOnlyValue, { width: Math.min(200, windowWidth - 140) }]}>
+                <Text style={styles.readOnlyValueText}>
+                  {genderDisplay || t('account.genderPlaceholder')}
+                </Text>
+              </View>
               <TouchableOpacity
-                style={[styles.genderButton, pickerSize]}
+                style={styles.genderButton}
                 onPress={() => {
                   blurAll();
                   setGenderOpen(true);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={t('account.openGender')}
               >
-                <Text style={styles.arrow}>▲</Text>
+                <MaterialIcons name="expand-more" size={26} color={colors.text} />
               </TouchableOpacity>
             </View>
           </AccountField>
+
           <AccountField label={t('account.birthDate')} error={errors.birthDate}>
             <View style={styles.genderPanelOrdering}>
-              <TextInput
-                style={[styles.accountInputs, styles.centeredText, { width: 172.5 }]}
-                mode="outlined"
-                placeholder={t('account.birthPlaceholder')}
-                value={birthLabel}
-                editable={false}
-                outlineColor={colors.text}
-              />
+              <View style={[styles.readOnlyValue, { width: Math.min(200, windowWidth - 140) }]}>
+                <Text style={styles.readOnlyValueText}>
+                  {birthLabel || t('account.birthPlaceholder')}
+                </Text>
+              </View>
               <TouchableOpacity
-                style={[styles.birthDateButton, pickerSize]}
+                style={styles.birthDateButton}
                 onPress={() => {
                   blurAll();
                   setBirthOpen(true);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={t('account.openBirth')}
               >
-                <Text style={styles.arrow}>▲</Text>
+                <MaterialIcons name="expand-more" size={26} color={colors.text} />
               </TouchableOpacity>
             </View>
           </AccountField>
-          <AccountField label={t('account.typePassword')} error={errors.currentPassword}>
-            <TextInput
-              {...nameProps('currentPassword', currentPassword, setCurrentPassword, {
-                placeholder: t('account.currentPasswordPlaceholder'),
-                secureTextEntry: true,
-                onChangeText: setCurrentPassword,
-              })}
+
+          <View pointerEvents={inputsLocked ? 'none' : 'auto'} style={{ width: '100%' }}>
+            <AppPasswordField
+              ref={currentPasswordRef}
+              label={t('account.typePassword')}
+              error={errors.currentPassword}
+              placeholder={t('account.currentPasswordPlaceholder')}
+              style={{ width: fieldWidth }}
             />
-          </AccountField>
-          <AccountField label={t('account.newPassword')} error={errors.newPassword}>
-            <TextInput
-              {...nameProps('newPassword', newPassword, setNewPassword, {
-                placeholder: t('account.newPasswordPlaceholder'),
-                secureTextEntry: true,
-                onChangeText: setNewPassword,
-              })}
+            <AppPasswordField
+              ref={newPasswordRef}
+              label={t('account.newPassword')}
+              error={errors.newPassword}
+              placeholder={t('account.newPasswordPlaceholder')}
+              style={{ width: fieldWidth }}
             />
-          </AccountField>
-          <AccountField label={t('account.retypePassword')} error={errors.retypePassword}>
-            <TextInput
-              {...nameProps('retypePassword', retypePassword, setRetypePassword, {
-                placeholder: t('account.retypePasswordPlaceholder'),
-                secureTextEntry: true,
-                onChangeText: setRetypePassword,
-              })}
+            <AppPasswordField
+              ref={retypePasswordRef}
+              label={t('account.retypePassword')}
+              error={errors.retypePassword}
+              placeholder={t('account.retypePasswordPlaceholder')}
+              style={{ width: fieldWidth }}
             />
-          </AccountField>
-          <View style={styles.accountPanels}>
-            <TouchableOpacity
-              style={[styles.saveButton, { marginLeft: (windowWidth - 315) / 2, marginRight: (windowWidth - 315) / 2 }]}
-              onPress={handleSave}
-            >
-              <Text style={styles.saveButtonText}>{t('account.save')}</Text>
-            </TouchableOpacity>
           </View>
-          <View style={{ marginBottom: 180 }} />
+
+          <View style={styles.accountPanels}>
+            <AppButton label={t('account.save')} onPress={handleSave} />
+            {saved ? <Text style={styles.savedHint}>{t('account.saved')}</Text> : null}
+          </View>
+          <View style={{ marginBottom: 24 }} />
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal transparent visible={genderOpen} animationType="slide" onRequestClose={() => setGenderOpen(false)}>
-        <TouchableWithoutFeedback onPress={() => setGenderOpen(false)}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalContentGender}>
-                <Text style={styles.modalTitle}>{t('account.genderTitle')}</Text>
-                {GENDERS.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={styles.modalButton}
-                    onPress={() => {
-                      setGender(option.value);
-                      setGenderOpen(false);
-                    }}
-                  >
-                    <Text style={styles.modalButtonText}>{t(option.key)}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-
-      <Modal transparent visible={birthOpen} animationType="slide" onRequestClose={() => setBirthOpen(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContentBirthDate}>
-            <Text style={styles.modalTitle}>{t('account.birthTitle')}</Text>
-            <View style={styles.pickerContainer}>
-              <Picker selectedValue={pickedDay} style={styles.picker} onValueChange={setPickedDay}>
-                {days.map((day) => <Picker.Item key={day} label={day} value={day} />)}
-              </Picker>
-              <Picker selectedValue={pickedMonth} style={styles.picker} onValueChange={setPickedMonth}>
-                {months.map((month) => <Picker.Item key={month} label={month} value={month} />)}
-              </Picker>
-              <Picker selectedValue={pickedYear} style={styles.picker} onValueChange={setPickedYear}>
-                {years.map((year) => <Picker.Item key={year} label={year} value={year} />)}
-              </Picker>
+      {genderOpen ? (
+        <Modal transparent visible animationType="fade" onRequestClose={() => closeGender()}>
+          <TouchableWithoutFeedback onPress={() => closeGender()}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContentGender}>
+                  <Text style={styles.modalTitle}>{t('account.genderTitle')}</Text>
+                  {GENDERS.map((option) => (
+                    <TouchableOpacity
+                      key={option.value}
+                      style={styles.modalButton}
+                      onPress={() => closeGender(option.value)}
+                    >
+                      <Text style={styles.modalButtonText}>{t(option.key)}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-            <TouchableOpacity
-              style={styles.modalButtonBirthDate}
-              onPress={() => {
-                setBirthDate({ day: pickedDay, month: pickedMonth, year: pickedYear });
-                setBirthOpen(false);
-              }}
-            >
-              <Text style={styles.modalButtonTextBirthDate}>{t('account.confirmBirth')}</Text>
-            </TouchableOpacity>
+          </TouchableWithoutFeedback>
+        </Modal>
+      ) : null}
+
+      {birthOpen ? (
+        <Modal transparent visible animationType="fade" onRequestClose={() => { setBirthOpen(false); lockInputsBriefly(); }}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContentBirthDate}>
+              <Text style={styles.modalTitle}>{t('account.birthTitle')}</Text>
+              <View style={styles.pickerContainer}>
+                <WheelColumn values={days} selected={pickedDay} onSelect={setPickedDay} />
+                <WheelColumn values={months} selected={pickedMonth} onSelect={setPickedMonth} />
+                <WheelColumn values={years} selected={pickedYear} onSelect={setPickedYear} />
+              </View>
+              <TouchableOpacity style={styles.modalButtonBirthDate} onPress={confirmBirth}>
+                <Text style={styles.modalButtonTextBirthDate}>{t('account.confirmBirth')}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
     </AppScreen>
   );
 }

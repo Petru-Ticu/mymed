@@ -4,13 +4,10 @@ import { useMedicalList } from './MedicalListContext';
 import { medicationHistory, subscribeMedicationHistory } from './medicationDoseActions';
 import { t, useI18n } from './i18n';
 import { unitLabel } from './i18n/labels';
+import { formatDayLabel } from './utils/formatDate';
 
 function calendarDay(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
-function dayLabel(date) {
-  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
 }
 
 export function formatCountdown(ms) {
@@ -113,7 +110,7 @@ export function getNotificationItems(lists, now = new Date()) {
         title: item.productName,
         body: t('notifications.upcomingBody', {
           time: item.scheduledTime,
-          date: dayLabel(item.at),
+          date: formatDayLabel(item.at),
           quantity: item.quantity,
           unit: unitLabel(item.unit),
           countdown: formatCountdown(remaining),

@@ -130,7 +130,7 @@ const handlePillsNumberChange = useCallback((index, text) => {
   setTimeInputs(prev => {
     const newInputs = [...prev];
     newInputs[index].medsNum = next;
-    console.log(`Updated medsNum for index ${index}: ${next}`);
+    // console.log(`Updated medsNum for index ${index}: ${next}`);
     return newInputs;
   });
 }, []);
@@ -151,7 +151,7 @@ const handleTimeChange = useCallback((index, type, value) => {
       setTimeInputs(prev => {
           const newInputs = [...prev];
           newInputs[index][type] = numericValue;
-          console.log(`Updated ${type} for index ${index}: ${numericValue}`);
+          // console.log(`Updated ${type} for index ${index}: ${numericValue}`);
           return newInputs;
       });
   }
@@ -394,9 +394,9 @@ if (!formattedTimesList.every(t => t.time !== "" && t.meds !== "")) {
 
 
    //console.log(dailyXTimesADayClass);
-   console.log("console log for the dailyXTimesADay from the DailyXTimesADay.js file\n this is the dailyXTimesADayClass right now:\n", dailyXTimesADayClass, 
-        "\n<-------------------------------------------------------------------------------------------------------------->\n"
-        );
+   // console.log("console log for the dailyXTimesADay from the DailyXTimesADay.js file\n this is the dailyXTimesADayClass right now:\n", dailyXTimesADayClass,
+   //      "\n<-------------------------------------------------------------------------------------------------------------->\n"
+   //      );
 };
   
 

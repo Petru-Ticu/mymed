@@ -1,20 +1,22 @@
 import { StyleSheet } from 'react-native';
+import { colors } from './theme/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
   },
   body: {
     flex: 1,
-    backgroundColor: '#cccccc',
-   // alignItems: 'center',
+    backgroundColor: colors.background,
     justifyContent: 'flex-start',
   },
   bodyContent: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   accountPanels: {
     margin: 10,
@@ -33,9 +35,31 @@ export const styles = StyleSheet.create({
     borderWidth: 0.15,
     borderRadius: 5,
   },
+  readOnlyValue: {
+    minHeight: 44,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    borderRadius: 5,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  readOnlyValueText: {
+    fontSize: 16,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  savedHint: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
   genderButton: {
-    backgroundColor: '#D1FFD1',
-    borderColor: '#000000',
+    width: 40,
+    height: 40,
+    backgroundColor: colors.accent,
+    borderColor: colors.text,
     borderWidth: 1,
     borderRadius: 5,
     justifyContent: 'center',
@@ -43,8 +67,10 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
   birthDateButton: {
-    backgroundColor: '#D1FFD1',
-    borderColor: '#000000',
+    width: 40,
+    height: 40,
+    backgroundColor: colors.accent,
+    borderColor: colors.text,
     borderWidth: 1,
     borderRadius: 5,
     justifyContent: 'center',
@@ -68,7 +94,7 @@ export const styles = StyleSheet.create({
   modalContentGender: {
     width: '60%',
     height: '45%',
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
     paddingTop: 40,
     paddingHorizontal: 30,
     paddingBottom: 80,
@@ -79,7 +105,7 @@ export const styles = StyleSheet.create({
   modalContentBirthDate: {
     width: '95%',
     height: '50%',
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
     paddingTop: 40,
     paddingHorizontal: 30,
     paddingBottom: 80,
@@ -132,6 +158,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    height: 180,
+    marginBottom: 60,
   },
   picker: {
     flex: 1,
@@ -168,16 +196,19 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   datePickerColumn: {
-    flex: 1, // Ensure all columns take up equal space
-    alignItems: 'center',
+    flex: 1,
     height: 150,
   },
   datePickerItem: {
-    height: 50,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 50,
-},
+    width: 70,
+    borderRadius: 8,
+  },
+  datePickerItemSelected: {
+    backgroundColor: colors.accent,
+  },
 
 
   datePickerDivider: {

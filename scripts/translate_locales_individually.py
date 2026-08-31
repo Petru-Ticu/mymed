@@ -3,6 +3,7 @@ import html
 import json
 import random
 import re
+import subprocess
 import time
 import urllib.error
 import urllib.parse
@@ -19,6 +20,21 @@ RESULT_RE = re.compile(r'<div class="result-container">(.*?)</div>', re.S)
 TAG_RE = re.compile(r"<[^>]+>")
 PLACEHOLDER_RE = re.compile(r"\{[^{}]+\}")
 FIXED_TERMS = ("myMed", "mcg/µg", "IU", "mg", "ml", "INR", "mEq", "mmol")
+NODE_CATALOG_SCRIPT = r"""
+const fs = require("fs");
+const source = fs.readFileSync("src/i18n/en.js", "utf8");
+const catalog = new Function(source.replace("export default", "return"))();
+const result = {};
+function flatten(value, prefix = "") {
+  for (const [key, child] of Object.entries(value)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (child && typeof child === "object") flatten(child, path);
+    else result[path] = child;
+  }
+}
+flatten(catalog);
+process.stdout.write(JSON.stringify(result));
+"""
 
 
 def flatten(value, prefix=""):
@@ -90,7 +106,13 @@ def request_translation(language, source):
 
 
 def main():
-    source = json.loads((ROOT / "en.flat.json").read_text())
+    source = json.loads(
+        subprocess.check_output(
+            ["node", "-e", NODE_CATALOG_SCRIPT],
+            cwd=ROOT.parents[1],
+            text=True,
+        )
+    )
     jobs = {}
     translated = {code: {} for code in CODES}
     with ThreadPoolExecutor(max_workers=12) as executor:

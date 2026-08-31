@@ -1,11 +1,13 @@
 {
   "nav": {
-    "home": "ACASĂ",
-    "analytics": "ANALIZE",
-    "meds": "MEDICAMENTE",
-    "more": "MAI MULT"
+    "home": "Acasă",
+    "analytics": "Analize",
+    "meds": "Medicamente",
+    "more": "Mai mult"
   },
   "header": {
+    "account": "Cont",
+    "openAccount": "Deschide setările contului",
     "accountSettings": "Setările contului",
     "notifications": "Notificări",
     "notificationsBadge": "Notificări, {count} necesită atenție"
@@ -16,21 +18,18 @@
     "emailPlaceholder": "De exemplu: john_doe@email.com",
     "passwordPlaceholder": "Parola (cel putin 8 caractere)",
     "retypePasswordPlaceholder": "Reintroduceţi parola",
-    "selectLanguage": "Selectați limba:",
-    "press": "apasă",
-    "selectFilter": "Selectați filtrul:",
-    "emailProviderHint": "Selectați un furnizor de e-mail dacă este în listă:",
-    "apple": "CONT APPLE ICLOUD",
-    "google": "CONT GOOGLE GMAIL",
-    "microsoft": "CONT MICROSOFT OUTLOOK",
-    "yahoo": "CONT YAHOO",
-    "continue": "Continuă"
+    "selectLanguage": "Limbă",
+    "languageValue": "{flag}  {name}",
+    "continue": "Continuă",
+    "sessionHint": "Aceasta creează o sesiune locală pe acest dispozitiv."
   },
   "language": {
-    "title": "Limbă"
+    "title": "Limbă",
+    "back": "Înapoi",
+    "confirm": "Folosește limba aceasta"
   },
   "home": {
-    "title": "ACASĂ",
+    "title": "Acasă",
     "subtitle": "Următoarele doze se vor afișa aici."
   },
   "more": {
@@ -51,17 +50,20 @@
     "lastName": "Nume:",
     "gender": "Gen:",
     "birthDate": "Data de naștere:",
-    "typePassword": "Introduceți parola dacă doriți să o \nSchimbați:",
-    "newPassword": "Schimbați-vă noua parolă aici:",
-    "retypePassword": "Reintroduceți noua parolă:",
+    "typePassword": "Parola actuală (doar dacă o schimbați)",
+    "newPassword": "Parolă nouă",
+    "retypePassword": "Confirmați parola nouă",
     "firstNamePlaceholder": "Introduceți prenumele dvs",
     "lastNamePlaceholder": "Introduceți numele de familie",
-    "genderPlaceholder": "Introduceți sexul dvs",
+    "genderPlaceholder": "Selectați genul",
     "birthPlaceholder": "ex: 20/08/1990",
     "currentPasswordPlaceholder": "Introduceți parola aici",
     "newPasswordPlaceholder": "Introduceți noua parolă aici",
     "retypePasswordPlaceholder": "Reintroduceți noua parolă",
-    "save": "Salvați informațiile contului",
+    "save": "Salvează",
+    "saved": "Salvat",
+    "openGender": "Alegeți genul",
+    "openBirth": "Alegeți data nașterii",
     "genderTitle": "Care este genul tău?",
     "male": "Bărbat",
     "female": "Femeie",
@@ -149,17 +151,32 @@
     "bluetoothOffBody": "Activați Bluetooth pentru a vă conecta la ceasul inteligent."
   },
   "meds": {
-    "empty": "Nu există nicio listă/s\nde memento medicale create în acest moment!",
+    "empty": "Nu există medicamente încă.\n\nAdaugă unul cu butonul +.",
     "addHow": "Cum doriți să adăugați medicamentul?",
-    "byScanning": "Prin scanare",
-    "byTyping": "Tastând",
-    "cancel": "ANULA",
+    "byScanning": "Scanează codul de bare sau QR",
+    "byTyping": "Tastează",
+    "cancel": "Anulează",
+    "close": "Închide",
+    "deleteTitle": "Ștergeți acest medicament?",
+    "deleteBody": "{name} va fi scos din listă.",
+    "delete": "Șterge",
+    "asNeededSchedule": "După nevoie",
+    "dueAt": "Acum la {time}",
+    "nextAt": "Următoarea la {time}",
+    "noUpcoming": "Nicio doză viitoare",
+    "inventory": "{amount} rămase",
+    "scannedCode": "Scanat: {code}",
+    "scanAgain": "Scanează din nou",
+    "edit": "Editează",
+    "take": "Ia",
+    "add": "Adaugă medicament",
+    "detailBarcode": "Cod de bare: {code}",
     "namePlaceholder": "Numele/marca produsului",
     "unitPlaceholder": "Unitate (de exemplu, mg, ml, ui)",
     "frequencyPlaceholder": "Frecvența medicamentelor de ex. zi/ora etc",
     "importantPlaceholder": "Informații importante",
     "editTitle": "Editați-vă medicamentul",
-    "createTitle": "Informații despre medicamentul dvs",
+    "createTitle": "Detalii medicament",
     "startDate": "Data începerii:",
     "endDate": "Data de încheiere:",
     "startDateValue": "Data de începere: {date}",
@@ -183,6 +200,16 @@
     "detailImportant": "Informații importante: {info}",
     "detailStart": "Data de început: {date}",
     "detailEnd": "Data de sfârșit: {date}"
+  },
+  "scan": {
+    "title": "Scanează medicamentul",
+    "why": "myMed folosește camera doar ca să citească un cod de bare sau QR de pe cutie, apoi completează formularul pentru tine.",
+    "allow": "Permite camera",
+    "notNow": "Nu acum",
+    "denied": "Accesul la cameră este oprit. Poți să-l activezi din Setări sau să tastezi medicamentul.",
+    "openSettings": "Deschide Setări",
+    "typeInstead": "Tastează",
+    "point": "Îndreaptă camera spre codul de bare sau QR"
   },
   "freq": {
     "asNeeded": "După cum este necesar (PRN)",
@@ -237,6 +264,7 @@
     "account": {
       "firstNameEmpty": "Trebuie să specificați prenumele dvs.!",
       "lastNameEmpty": "Trebuie să specificați numele dvs. de familie!",
+      "nameInvalid": "Folosiți litere, spații, cratimă sau apostrof.",
       "genderEmpty": "Trebuie să specificați sexul dvs.!",
       "birthDateEmpty": "Trebuie să specificați Data Nașterii!",
       "birthDateInvalid": "Data nașterii dvs. trebuie să fie o întâlnire reală!",

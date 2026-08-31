@@ -9,7 +9,7 @@ export default function AppScreen({ children }) {
   return (
     <View style={screenStyles.container}>
       <Header />
-      {children}
+      <View style={screenStyles.bodySlot}>{children}</View>
       <NavBar />
     </View>
   );
@@ -20,6 +20,9 @@ export const screenStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  bodySlot: {
+    flex: 1,
+  },
   body: {
     flex: 1,
     backgroundColor: colors.background,
@@ -27,7 +30,7 @@ export const screenStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 40,
+    fontSize: 28,
     color: colors.text,
     fontWeight: 'bold',
     margin: 10,

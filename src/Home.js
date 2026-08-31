@@ -7,10 +7,7 @@ import { formatCountdown, useNotificationItems } from './notificationItems';
 import { unitLabel } from './i18n/labels';
 import { useI18n } from './i18n';
 import { styles } from './Home.styles';
-
-function dayLabel(date) {
-  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-}
+import { formatDayLabel } from './utils/formatDate';
 
 function timedItems(items) {
   return (items || []).filter((item) => item.kind === 'due' || item.kind === 'upcoming');
@@ -35,7 +32,7 @@ export default function Home() {
     <AppScreen>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{t('home.title')}</Text>
-        <Text style={styles.today}>{t('home.today', { date: dayLabel(now) })}</Text>
+        <Text style={styles.today}>{t('home.today', { date: formatDayLabel(now) })}</Text>
         <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
 
         {doses.length === 0 ? (
@@ -89,7 +86,7 @@ export default function Home() {
                       <Text style={styles.time}>
                         {t('home.nextAt', {
                           time: occurrence?.scheduledTime,
-                          date: occurrence?.at ? dayLabel(occurrence.at) : '',
+                          date: occurrence?.at ? formatDayLabel(occurrence.at) : '',
                         })}
                       </Text>
                       <Text style={styles.take}>

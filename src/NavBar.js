@@ -1,37 +1,47 @@
 import React from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppNavigation } from './navigation/useAppNavigation';
 import { colors } from './theme/colors';
+import { layout } from './theme/layout';
 import { useI18n } from './i18n';
 
 const tabs = [
-  { key: 'home', labelKey: 'nav.home', Icon: Icon, iconName: 'home-sharp', handler: 'handleHomePress' },
-  { key: 'analytics', labelKey: 'nav.analytics', Icon: MaterialIcons, iconName: 'analytics', handler: 'handleMyAnalyticsPress' },
-  { key: 'meds', labelKey: 'nav.meds', Icon: MaterialCommunityIcons, iconName: 'pill', handler: 'handleMyMedsPress' },
-  { key: 'more', labelKey: 'nav.more', Icon: MaterialCommunityIcons, iconName: 'dots-horizontal', handler: 'handleMorePress' },
+  { key: 'home', route: 'Home', labelKey: 'nav.home', Icon: Icon, iconName: 'home-sharp', handler: 'handleHomePress' },
+  { key: 'analytics', route: 'Myanalytics', labelKey: 'nav.analytics', Icon: MaterialIcons, iconName: 'analytics', handler: 'handleMyAnalyticsPress' },
+  { key: 'meds', route: 'Mymeds', labelKey: 'nav.meds', Icon: MaterialCommunityIcons, iconName: 'pill', handler: 'handleMyMedsPress' },
+  { key: 'more', route: 'More', labelKey: 'nav.more', Icon: MaterialCommunityIcons, iconName: 'dots-horizontal', handler: 'handleMorePress' },
 ];
 
 export default function NavBar() {
   const nav = useAppNavigation();
   const { t } = useI18n();
-  const { windowHeight } = nav;
   const insets = useSafeAreaInsets();
-  // Keep 5% from the bottom, but never sit under the home indicator / Android nav bar.
-  const bottomOffset = Math.max(windowHeight * 0.05, insets.bottom);
+  const currentRoute = useNavigationState((state) => state?.routes?.[state.index]?.name);
 
   return (
-    <View style={[styles.navBarContainer, { bottom: bottomOffset }]}>
+    <View style={[styles.navBarContainer, { paddingBottom: insets.bottom }]}>
       {tabs.map((tab) => {
         const TabIcon = tab.Icon;
+        const selected = currentRoute === tab.route;
         return (
-          <Pressable key={tab.key} onPress={nav[tab.handler]} style={styles.button}>
+          <Pressable
+            key={tab.key}
+            onPress={nav[tab.handler]}
+            style={[styles.button, selected ? styles.buttonSelected : null]}
+            accessibilityRole="tab"
+            accessibilityState={{ selected }}
+            accessibilityLabel={t(tab.labelKey)}
+          >
             <View style={styles.buttonContent}>
-              <TabIcon name={tab.iconName} size={26} color={colors.text} />
-              <Text style={styles.buttonText}>{t(tab.labelKey)}</Text>
+              <TabIcon name={tab.iconName} size={24} color={colors.text} />
+              <Text style={[styles.buttonText, selected ? styles.buttonTextSelected : null]}>
+                {t(tab.labelKey)}
+              </Text>
             </View>
           </Pressable>
         );
@@ -43,20 +53,28 @@ export default function NavBar() {
 const styles = StyleSheet.create({
   navBarContainer: {
     flexDirection: 'row',
-    height: '10.5%',
+    minHeight: layout.navBarHeight,
     backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'space-around',
-    position: 'absolute',
-    left: 0,
-    right: 0,
+    paddingTop: 6,
   },
   button: {
-    padding: 10,
+    flex: 1,
+    paddingVertical: 6,
+    marginHorizontal: 4,
+    borderRadius: 10,
+  },
+  buttonSelected: {
+    backgroundColor: colors.accentStrong,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 13,
     color: colors.text,
+    marginTop: 2,
+  },
+  buttonTextSelected: {
+    fontWeight: 'bold',
   },
   buttonContent: {
     flexDirection: 'column',

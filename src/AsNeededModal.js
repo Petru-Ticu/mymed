@@ -10,6 +10,7 @@ import {
   getFrequencyDone,
 } from './frequencyDraft';
 import { sanitizeDoseCount } from './utils/doseCountInput';
+import { inventoryValue } from './utils/frequencyParse';
 import FieldError from './FieldError';
 import { useI18n } from './i18n';
 
@@ -125,10 +126,10 @@ const handleBackPressAsNeeded = useCallback(() => {
        
             setAsNeededModalVisible(false);
 
-        console.log("\n<--------------------------------------------------------------------------------------------------------------\n",
-        "console log for the asNeededClass from the AsNeededModal.js file\n this is the asNeededClass right now:\n", asNeededClass, 
-        "\n<--------------------------------------------------------------------------------------------------------------\n"
-        );
+        // console.log("\n<--------------------------------------------------------------------------------------------------------------\n",
+        // "console log for the asNeededClass from the AsNeededModal.js file\n this is the asNeededClass right now:\n", asNeededClass,
+        // "\n<--------------------------------------------------------------------------------------------------------------\n"
+        // );
         //console.log(asNeededClass);
     };
         

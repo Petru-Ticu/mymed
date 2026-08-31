@@ -36,15 +36,16 @@ export function getWelcomeConfirmPasswordError(password, confirmPassword) {
   return '';
 }
 
-const NAME_REGEX = /^[a-zA-Z\s]+$/;
+export const NAME_CHAR_FILTER = /^[\p{L}\p{M}\s'.-]*$/u;
+export const NAME_VALUE_REGEX = /^[\p{L}\p{M}\s'.-]+$/u;
 
 export function getRequiredNameError(value, emptyMessage) {
   const trimmed = String(value || '').trim();
   if (!trimmed) {
     return emptyMessage;
   }
-  if (!NAME_REGEX.test(trimmed)) {
-    return emptyMessage;
+  if (!NAME_VALUE_REGEX.test(trimmed)) {
+    return ERRORS_ACCOUNT_SETTINGS.nameInvalid;
   }
   return '';
 }

@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 18,
     paddingTop: 8,
-    paddingBottom: 150,
+    paddingBottom: 24,
   },
   title: {
     fontSize: 32,
@@ -41,19 +41,19 @@ export const styles = StyleSheet.create({
     minHeight: 96,
   },
   cardDue: {
-    backgroundColor: '#FFE8E8',
+    backgroundColor: colors.due,
   },
   cardUpcoming: {
     backgroundColor: colors.accent,
   },
   cardApproaching: {
-    backgroundColor: '#FFF4D6',
+    backgroundColor: colors.approaching,
   },
   cardEmpty: {
-    backgroundColor: '#FFE8E8',
+    backgroundColor: colors.due,
   },
   cardLow: {
-    backgroundColor: '#FFE4C4',
+    backgroundColor: colors.low,
   },
   cardTitle: {
     fontSize: 24,

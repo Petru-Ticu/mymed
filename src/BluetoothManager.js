@@ -14,7 +14,7 @@ function getBleManager() {
   try {
     manager = new BleManager();
   } catch (error) {
-    console.log('Error creating BLE manager:', error.message);
+    // console.log('Error creating BLE manager:', error.message);
     return null;
   }
   return manager;
@@ -77,7 +77,7 @@ export const startBluetoothScan = async (onHeartRateUpdate) => {
               heartRateCharacteristicUUID,
               (error, characteristic) => {
                 if (error) {
-                  console.log('Error reading heart rate:', error.message);
+                  // console.log('Error reading heart rate:', error.message);
                   return;
                 }
 

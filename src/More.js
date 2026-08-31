@@ -8,6 +8,7 @@ import { useMedicalList } from './MedicalListContext';
 import { resetMedicationHistory } from './medicationDoseActions';
 import { syncScheduledDoseAlerts } from './phoneAlerts';
 import { useAppNavigation } from './navigation/useAppNavigation';
+import AppButton from './ui/AppButton';
 
 const APP_VERSION = '1.0.0';
 
@@ -56,6 +57,8 @@ export default function More() {
             from: 'More',
             selectedLanguage: language,
           })}
+          accessibilityRole="button"
+          accessibilityLabel={t('more.language')}
         >
           <Text style={styles.rowTitle}>{t('more.language')}</Text>
           <Text style={styles.rowValue}>{t('more.languageValue', { name: `${meta.flag}  ${meta.name}` })}</Text>
@@ -80,9 +83,11 @@ export default function More() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.signOut} onPress={onSignOut}>
-          <Text style={styles.signOutText}>{t('more.signOut')}</Text>
-        </TouchableOpacity>
+        <AppButton
+          variant="danger"
+          label={t('more.signOut')}
+          onPress={onSignOut}
+        />
       </ScrollView>
     </AppScreen>
   );
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 140,
+    paddingBottom: 24,
   },
   title: {
     fontSize: 32,

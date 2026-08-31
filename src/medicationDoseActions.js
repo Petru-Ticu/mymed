@@ -108,8 +108,8 @@ export function resetMedicationHistory() {
 }
 
 function logStore(reason) {
-  console.log(`${LOG} ${reason}`);
-  console.log(JSON.stringify(medicationHistory, null, 2));
+  // console.log(`${LOG} ${reason}`);
+  // console.log(JSON.stringify(medicationHistory, null, 2));
 }
 
 export function extractTimesFromFrequency(modalFrequency) {
@@ -228,7 +228,7 @@ export function recordListUpdates(previousLists, nextLists) {
       };
       changed = true;
       activityLog.record('medication.created', { id, productName: list.productName });
-      console.log(`${LOG} list created`, listSnapshot(list));
+      // console.log(`${LOG} list created`, listSnapshot(list));
       return;
     }
     const before = fieldRecord(prevById.get(id));
@@ -259,12 +259,12 @@ export function recordListUpdates(previousLists, nextLists) {
         from: before[field],
         to: after[field],
       });
-      console.log(`${LOG} list field changed`, {
-        id,
-        field: FIELD_LABELS[field],
-        from: before[field],
-        to: after[field],
-      });
+      // console.log(`${LOG} list field changed`, {
+      //   id,
+      //   field: FIELD_LABELS[field],
+      //   from: before[field],
+      //   to: after[field],
+      // });
     });
   });
 
@@ -273,7 +273,7 @@ export function recordListUpdates(previousLists, nextLists) {
       medicationHistory.lists[id].deletedAt = nowStamp();
       changed = true;
       activityLog.record('medication.deleted', { id });
-      console.log(`${LOG} list deleted`, { id });
+      // console.log(`${LOG} list deleted`, { id });
     }
   });
 
@@ -289,7 +289,7 @@ function recordDoseEvent(event) {
   if (listId != null && medicationHistory.lists[listId]) {
     medicationHistory.lists[listId].snapshot = listSnapshot(event.listAfter || event.listBefore);
   }
-  console.log(`${LOG} dose action`, event);
+  // console.log(`${LOG} dose action`, event);
   activityLog.record('dose.' + event.kind, {
     listId: event.listId,
     productName: event.productName,

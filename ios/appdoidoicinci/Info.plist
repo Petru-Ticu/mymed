@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>app_doidoicinci</string>
+    <string>myMed</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -37,6 +37,8 @@
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>NSCameraUsageDescription</key>
+    <string>myMed uses the camera to scan medicine barcodes and QR codes so it can fill in the medicine form.</string>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>

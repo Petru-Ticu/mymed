@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Alert, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Alert, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import AppScreen from './layout/AppScreen';
 import { useMedicalList } from './MedicalListContext';
-import { medicationsStore } from './userStore';
 import { startBluetoothScan } from './BluetoothManager';
 import HeartRatePanel from './HeartRatePanel';
 import { colors } from './theme/colors';
+import AppButton from './ui/AppButton';
 import {
   formatDoseSentence,
   getRecentDoseEvents,
@@ -26,9 +26,9 @@ export default function Myanalytics() {
   const [recent, setRecent] = useState(getRecentDoseEvents());
 
   useEffect(() => {
-    console.log('<---------------------------- LOGGING FROM MYANALYTICS.JS -------------------------------->');
-    console.log('Current medications:', JSON.stringify(medicationsStore.getAll(), null, 2));
-    console.log('<---------------------------- END OF LOGGING FROM MYANALYTICS.JS -------------------------------->');
+    // console.log('<---------------------------- LOGGING FROM MYANALYTICS.JS -------------------------------->');
+    // console.log('Current medications:', JSON.stringify(medicationsStore.getAll(), null, 2));
+    // console.log('<---------------------------- END OF LOGGING FROM MYANALYTICS.JS -------------------------------->');
   }, [medicalLists]);
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export default function Myanalytics() {
 
         <View style={styles.watchBlock}>
           {!isConnected ? (
-            <Button title={t('analytics.connectWatch')} onPress={handleConnectPress} />
+            <AppButton title={t('analytics.connectWatch')} label={t('analytics.connectWatch')} onPress={handleConnectPress} />
           ) : (
             <HeartRatePanel heartRateData={heartRateData} />
           )}
@@ -122,7 +122,7 @@ export default function Myanalytics() {
 const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 20,
-    paddingBottom: 140,
+    paddingBottom: 24,
     paddingTop: 12,
   },
   heading: {

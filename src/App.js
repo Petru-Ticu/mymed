@@ -15,6 +15,7 @@ import { MedicalListProvider } from './MedicalListContext';
 import { navigationRef } from './navigation/navigationRef';
 import DoseReminderHost from './DoseReminderHost';
 import { I18nProvider } from './i18n';
+import ErrorBoundary from './ui/ErrorBoundary';
 
 
 const Stack = createStackNavigator();
@@ -23,6 +24,7 @@ const hiddenHeader = { headerShown: false };
 function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
       <SafeAreaProvider>
         <MedicalListProvider>
           <I18nProvider>
@@ -42,6 +44,10 @@ function App() {
                 name="MedicationTypingPage"
                 getComponent={() => require('./MedicationTypingPage').default}
               />
+              <Stack.Screen
+                name="MedicationScan"
+                getComponent={() => require('./MedicationScan').default}
+              />
               <Stack.Screen name="More" component={More} />
               <Stack.Screen name="Accountsettings" component={Accountsettings} />
               <Stack.Screen name="Notifications" component={Notifications} />
@@ -51,6 +57,7 @@ function App() {
           </I18nProvider>
         </MedicalListProvider>
       </SafeAreaProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

@@ -7,7 +7,7 @@ import { sanitizeDoseCount } from './utils/doseCountInput';
 import { getActiveRouteName } from './navigation/navigationRef';
 import { classifyInventory } from './frequencyHandlers';
 import { lastAsNeededStep } from './notificationItems';
-import { useI18n } from './i18n';
+import { useI18n, subscribeI18n } from './i18n';
 import { unitLabel } from './i18n/labels';
 import {
   notifyInventoryOnPhone,
@@ -17,11 +17,10 @@ import {
   applyAsNeededTake,
   applyScheduledAnswer,
   collectDueDoses,
-  extractTimesFromFrequency,
   markScheduledFired,
 } from './medicationDoseActions';
 
-const SILENT_ROUTES = new Set(['Welcome', 'Language_Selector']);
+const SILENT_ROUTES = new Set(['Welcome', 'Language_Selector', 'MedicationScan']);
 
 const DoseActionsContext = createContext({
   openAsNeededTake: () => {},
@@ -32,9 +31,9 @@ export function useDoseActions() {
   return useContext(DoseActionsContext);
 }
 
-function ActionModal({ visible, title, children, buttons }) {
+function ActionModal({ visible, title, children, buttons, onRequestClose }) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => {}}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onRequestClose || (() => {})}>
       <View style={styles.overlay}>
         <View style={styles.panel}>
           <Text style={styles.title}>{title}</Text>
@@ -145,20 +144,20 @@ export default function DoseReminderHost({ children }) {
       const due = collectDueDoses(listsRef.current, now);
       if (clock !== lastLoggedMinute) {
         lastLoggedMinute = clock;
-        console.log('[MedicationDose] clock check', {
-          routeName,
-          clock,
-          lists: listsRef.current.length,
-          due: due.length,
-          slots: listsRef.current.map((list) => ({
-            name: list.productName,
-            times: extractTimesFromFrequency(list.modalFrequency).map((slot) => slot.time),
-            dates: {
-              start: list.startAndEndDatesClass?.startDate || null,
-              end: list.startAndEndDatesClass?.endDate || null,
-            },
-          })),
-        });
+        // console.log('[MedicationDose] clock check', {
+        //   routeName,
+        //   clock,
+        //   lists: listsRef.current.length,
+        //   due: due.length,
+        //   slots: listsRef.current.map((list) => ({
+        //     name: list.productName,
+        //     times: extractTimesFromFrequency(list.modalFrequency).map((slot) => slot.time),
+        //     dates: {
+        //       start: list.startAndEndDatesClass?.startDate || null,
+        //       end: list.startAndEndDatesClass?.endDate || null,
+        //     },
+        //   })),
+        // });
       }
       if (!due.length) {
         return;
@@ -170,7 +169,7 @@ export default function DoseReminderHost({ children }) {
       }
       fresh.forEach((item) => {
         markScheduledFired(item.key);
-        console.log('[MedicationDose] queued scheduled reminder', item);
+        // console.log('[MedicationDose] queued scheduled reminder', item);
       });
       setQueue((prev) => [...prev, ...fresh]);
     }, 1000);
@@ -183,6 +182,9 @@ export default function DoseReminderHost({ children }) {
     }
     presentInventoryAlerts(medicalLists);
     syncScheduledDoseAlerts(medicalLists);
+    return subscribeI18n(() => {
+      syncScheduledDoseAlerts(listsRef.current);
+    });
   }, [medicalLists, presentInventoryAlerts, remindersAllowed]);
 
   const current = remindersAllowed ? queue[0] : null;
@@ -191,7 +193,7 @@ export default function DoseReminderHost({ children }) {
     if (!current) {
       return;
     }
-    console.log('[MedicationDose] scheduled answer', { tookIt, current });
+    // console.log('[MedicationDose] scheduled answer', { tookIt, current });
     const result = applyScheduledAnswer(listsRef.current, current, tookIt);
     setMedicalLists(result.nextLists);
     presentInventoryAlerts(result.nextLists);
@@ -202,7 +204,7 @@ export default function DoseReminderHost({ children }) {
     setAsNeededList(list);
     setAsNeededStep('confirm');
     setAsNeededQty('');
-    console.log('[MedicationDose] opened As Needed take', { id: list?.id, name: list?.productName });
+    // console.log('[MedicationDose] opened As Needed take', { id: list?.id, name: list?.productName });
   }, []);
 
   const promptScheduledDose = useCallback((item) => {
@@ -217,7 +219,7 @@ export default function DoseReminderHost({ children }) {
       }
       return [item, ...prev];
     });
-    console.log('[MedicationDose] prompted scheduled dose from notifications', item);
+    // console.log('[MedicationDose] prompted scheduled dose from notifications', item);
   }, []);
 
   const closeAsNeeded = () => {
@@ -235,7 +237,7 @@ export default function DoseReminderHost({ children }) {
     if (!qty) {
       return;
     }
-    console.log('[MedicationDose] As Needed OK', { name: asNeededList.productName, qty });
+    // console.log('[MedicationDose] As Needed OK', { name: asNeededList.productName, qty });
     const result = applyAsNeededTake(listsRef.current, asNeededList, qty);
     setMedicalLists(result.nextLists);
     presentInventoryAlerts(result.nextLists);
@@ -268,6 +270,7 @@ export default function DoseReminderHost({ children }) {
       <ActionModal
         visible={showScheduled}
         title={scheduledTitle}
+        onRequestClose={() => setQueue((prev) => prev.slice(1))}
         buttons={[
           { label: t('dose.ok'), color: '#5CA65C', onPress: () => answerScheduled(true) },
           { label: t('dose.no'), color: '#E53935', onPress: () => answerScheduled(false) },
@@ -277,6 +280,7 @@ export default function DoseReminderHost({ children }) {
       <ActionModal
         visible={showAsNeeded && asNeededStep === 'confirm'}
         title={t('dose.asNeededConfirm', { name: asNeededList?.productName })}
+        onRequestClose={closeAsNeeded}
         buttons={[
           { label: t('dose.yes'), color: '#5CA65C', onPress: confirmAsNeededYes },
           { label: t('dose.no'), color: '#E53935', onPress: closeAsNeeded },
@@ -286,6 +290,7 @@ export default function DoseReminderHost({ children }) {
       <ActionModal
         visible={showAsNeeded && asNeededStep === 'quantity'}
         title={t('dose.asNeededQty', { name: asNeededList?.productName })}
+        onRequestClose={closeAsNeeded}
         buttons={[
           { label: t('dose.ok'), color: '#5CA65C', onPress: confirmAsNeededOk },
           { label: t('dose.cancel'), color: '#E53935', onPress: closeAsNeeded },
@@ -317,6 +322,7 @@ export default function DoseReminderHost({ children }) {
           textColor: colors.text,
           onPress: () => dismissWarnings(approachWarnings, setApproachWarnings),
         }]}
+        onRequestClose={() => dismissWarnings(approachWarnings, setApproachWarnings)}
       />
 
       <ActionModal
@@ -328,6 +334,7 @@ export default function DoseReminderHost({ children }) {
           textColor: colors.text,
           onPress: () => dismissWarnings(refillWarnings, setRefillWarnings),
         }]}
+        onRequestClose={() => dismissWarnings(refillWarnings, setRefillWarnings)}
       />
 
       <ActionModal
@@ -339,6 +346,7 @@ export default function DoseReminderHost({ children }) {
           textColor: colors.text,
           onPress: () => dismissWarnings(emptyWarnings, setEmptyWarnings),
         }]}
+        onRequestClose={() => dismissWarnings(emptyWarnings, setEmptyWarnings)}
       />
     </DoseActionsContext.Provider>
   );

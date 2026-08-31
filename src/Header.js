@@ -6,6 +6,7 @@ import { useAppNavigation } from './navigation/useAppNavigation';
 import { useNotificationItems } from './notificationItems';
 import { accountStore, subscribeUserStore } from './userStore';
 import { colors } from './theme/colors';
+import { layout } from './theme/layout';
 import { useI18n } from './i18n';
 
 export default function Header() {
@@ -23,25 +24,33 @@ export default function Header() {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <View style={styles.accountHeader}>
-        <Pressable onPress={handleAccountPress} style={styles.accountContainer}>
-          <View style={styles.accountIcon}>
-            <Ionicons name="person-circle-outline" size={55} color={colors.text} />
-            <View style={styles.accountTextContainer}>
-              <Text style={styles.accountText}>{t('header.accountSettings')}</Text>
-              {headerName ? <Text style={styles.accountText}>{headerName}</Text> : null}
-            </View>
+        <Pressable
+          onPress={handleAccountPress}
+          style={styles.accountContainer}
+          accessibilityRole="button"
+          accessibilityLabel={t('header.openAccount')}
+        >
+          <Ionicons name="person-circle-outline" size={36} color={colors.text} />
+          <View style={styles.accountTextContainer}>
+            <Text style={styles.accountName} numberOfLines={1}>
+              {headerName || t('header.account')}
+            </Text>
+            {headerName ? (
+              <Text style={styles.accountHint}>{t('header.account')}</Text>
+            ) : null}
           </View>
         </Pressable>
         <Pressable
           onPress={handleNotificationsPress}
           style={styles.notificationsButton}
+          accessibilityRole="button"
           accessibilityLabel={
             badgeCount > 0
               ? t('header.notificationsBadge', { count: badgeCount })
               : t('header.notifications')
           }
         >
-          <Ionicons name="notifications-outline" size={30} color={colors.text} />
+          <Ionicons name="notifications-outline" size={26} color={colors.text} />
           {badgeCount > 0 ? (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{badgeCount > 9 ? '9+' : String(badgeCount)}</Text>
@@ -55,54 +64,55 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.accent,
   },
   accountHeader: {
-    height: 100,
+    height: layout.headerInnerHeight,
     backgroundColor: colors.accent,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     justifyContent: 'space-between',
   },
   accountContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: 10,
   },
-  accountIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
-  },
   accountTextContainer: {
-    marginLeft: 10,
+    marginLeft: 8,
+    flex: 1,
   },
-  accountText: {
+  accountName: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: colors.text,
   },
+  accountHint: {
+    fontSize: 13,
+    color: colors.textMuted,
+  },
   notificationsButton: {
-    padding: 10,
-    marginRight: 4,
+    padding: 8,
   },
   badge: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    minWidth: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#C62828',
+    top: 2,
+    right: 2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.error,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    borderWidth: 2,
+    paddingHorizontal: 4,
+    borderWidth: 1,
     borderColor: colors.text,
   },
   badgeText: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
   },
 });

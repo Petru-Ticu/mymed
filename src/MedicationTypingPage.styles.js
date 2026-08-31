@@ -1,16 +1,18 @@
 import { StyleSheet } from 'react-native';
+import { colors } from './theme/colors';
+import { layout } from './theme/layout';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#D1FFD1',
+    backgroundColor: colors.accent,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    height: 60,
+    height: layout.headerInnerHeight,
   },
   backButton: {
     marginRight: 10,
@@ -27,16 +29,37 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   inputProductBrand: {
-    height: 40,
-    borderColor: '#000000',
-    backgroundColor: '#ffffff',
+    flex: 1,
+    height: 44,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: layout.radius,
     paddingHorizontal: 10,
-    marginBottom: 26,
     fontSize: 15,
-    width: 390,
+    color: colors.text,
+  },
+  scanNameButton: {
+    width: 44,
+    height: 44,
+    marginLeft: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    borderRadius: layout.radius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scannedHint: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginBottom: 16,
   },
   unitContainer: {
     flexDirection: 'row',
@@ -54,20 +77,20 @@ export const styles = StyleSheet.create({
     marginRight: 10,
   },
   measurementContainer: {
-  //flex: 1,
+    flex: 1,
     flexDirection: 'row',
-    marginBottom: 0
+    marginBottom: 0,
   },
   measurementInput: {
-   // flex: 1,
-    width: 340,
-    height: 40,
-    borderColor: '#000000',
-    backgroundColor: '#ffffff',
+    flex: 1,
+    height: 44,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: layout.radius,
     paddingHorizontal: 10,
     fontSize: 15,
+    color: colors.text,
   },
   measurementButton: {
     width: 40,
@@ -84,15 +107,16 @@ export const styles = StyleSheet.create({
     marginBottom: 26,
   },
   frequencyInput: {
-    //flex: 1,
-    width: 340,
-    height: 40,
-    borderColor: '#000000',
-    backgroundColor: '#ffffff',
+    flex: 1,
+    minHeight: 44,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: layout.radius,
     paddingHorizontal: 10,
+    paddingVertical: 10,
     marginRight: 10,
+    justifyContent: 'center',
   },
   frequencyButton: {
     width: 40,
@@ -131,9 +155,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
-    width: 380,
-    borderColor: '#000000',
-    backgroundColor: '#ffffff',
+    width: '100%',
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
@@ -170,7 +194,7 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   calendarContainer: {
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
     borderRadius: 5,
     padding: 10,
   },
@@ -189,7 +213,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   }, 
   modalContent: {
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
     borderRadius: 5,
     padding: 30,
     maxHeight: '70%',
@@ -201,7 +225,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#000000',
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.background,
   },
   modalItemText: {
     fontSize: 16,
@@ -214,7 +238,7 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',  // background color of the full screen modal
   },
   modalView: {
-    backgroundColor: '#cccccc',  // background color of the modal
+    backgroundColor: colors.background,  // background color of the modal
     borderRadius: 10,  // make the modal a square (no radius)
     padding: 85,  // padding inside the modal
     alignItems: 'center',

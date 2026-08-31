@@ -1,17 +1,16 @@
 import { StyleSheet } from 'react-native';
+import { colors } from './theme/colors';
+import { layout } from './theme/layout';
 
 export function getStyles(windowWidth, windowHeight) {
  return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#cccccc',
-  },
   body: {
     flex: 1,
-    backgroundColor: '#cccccc',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 80, // Account for the height of the navbar
+    backgroundColor: colors.background,
+    alignItems: 'stretch',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 88,
   },
   textContainerProductName: {
     borderWidth: 1,
@@ -135,63 +134,54 @@ export function getStyles(windowWidth, windowHeight) {
     textAlign: 'center',
   },
   medicalReminderGenList: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    //paddingBottom: windowHeight * 0.085,
-    paddingHorizontal: 20, // Side padding
-    paddingTop: 20, // Top padding
-    marginHorizontal: 40,
-    marginBottom: 40,
-    margin: 40,
-    width: windowWidth * 0.628, 
-    height: windowHeight * 0.18, 
-    borderRadius: 10,
-    shadowColor: "#000000",
-    shadowOffset: {
-        width: 10,
-        height: 6,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    borderWidth: 3, // subtle border
-    borderColor: '#ddd', // light grey border for a soft separation
-    elevation: 20,
-    overflow: 'hidden',
-},
-medicalReminderFullGenList: {
-  backgroundColor: '#cccccc',
-  padding: 20,
-  paddingHorizontal: 40, // Side padding
-  paddingTop: 20, // Top padding
-  marginHorizontal: 20,
-  marginBottom: 40,
-  margin: 60,
-  width: windowWidth * 0.9, 
-  height: windowHeight * 0.8, 
-  borderRadius: 10,
-  shadowColor: "#000000",
-  shadowOffset: {
-      width: 10,
-      height: 6,
+    backgroundColor: colors.surface,
+    padding: 16,
+    marginBottom: 14,
+    width: '100%',
+    borderRadius: layout.radius,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  shadowOpacity: 0.1,
-  shadowRadius: 10,
-  borderWidth: 3, // subtle border
-  borderColor: '#cccccc', 
-  elevation: 20,
+  cardName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 6,
+  },
+  cardMeta: {
+    fontSize: 16,
+    color: colors.textMuted,
+    marginBottom: 2,
+  },
+  actionSpacer: {
+    width: 42,
+    height: 42,
+  },
+medicalReminderFullGenList: {
+  backgroundColor: colors.background,
+  padding: 20,
+  paddingHorizontal: 24,
+  paddingTop: 20,
+  width: windowWidth * 0.9,
+  height: windowHeight * 0.8,
+  borderRadius: layout.radius,
+  borderWidth: 1,
+  borderColor: colors.border,
   overflow: 'hidden',
 },
 
   addButton: {
     position: 'absolute',
-    bottom: 220, // Adjust the bottom position as needed
+    bottom: 16,
     right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#D1FFD1',
+    width: layout.fabSize,
+    height: layout.fabSize,
+    borderRadius: layout.fabSize / 2,
+    backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   modalContainerAddListButton: {
     flex: 1,
@@ -206,9 +196,10 @@ medicalReminderFullGenList: {
     justifyContent: 'center',
   },
   modalContent: {
-    backgroundColor: 'trasparent',
-    borderRadius: 5,
-    padding: 30
+    backgroundColor: '#222222',
+    borderRadius: layout.radius,
+    padding: 24,
+    maxWidth: '92%',
   },     
   modalFullListContent: {
     flexGrow: 1,
@@ -220,15 +211,16 @@ medicalReminderFullGenList: {
     marginBottom: 20,
   },
   modalButtonsContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
   modalButton: {
-    backgroundColor: '#D1FFD1',
-    paddingVertical: 10,
+    backgroundColor: colors.accent,
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginHorizontal: 10,
+    borderRadius: layout.radius,
+    marginVertical: 6,
+    alignItems: 'center',
   },
   modalButtonText: {
     fontSize: 16,
@@ -238,18 +230,20 @@ medicalReminderFullGenList: {
   emptyListsText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000000',
+    color: colors.text,
+    textAlign: 'center',
+    lineHeight: 28,
+    paddingHorizontal: 12,
+    marginTop: 24,
   },
   textCancelFullList: {
     fontWeight: 'bold',
   },
   cardActionRow: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 12,
+    marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   cardActionCell: {
     flex: 1,
