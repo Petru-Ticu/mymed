@@ -23,13 +23,6 @@
   },
   "plugins": [
     [
-      "expo-notifications",
-      {
-        "color": "#D1FFD1",
-        "defaultChannel": "medicine-reminders"
-      }
-    ],
-    [
       "expo-camera",
       {
         "cameraPermission": "myMed uses the camera to scan medicine barcodes and QR codes so it can fill in the medicine form.",

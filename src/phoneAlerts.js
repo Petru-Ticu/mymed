@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import { colors } from './theme/colors';
 import { getUpcomingOccurrences } from './frequencyHandlers';
 import { t } from './i18n';
@@ -7,7 +7,20 @@ import { sessionStore } from './userStore';
 import { runningInExpoGo } from './utils/runtime';
 
 const ANDROID_CHANNEL = 'medicine-reminders';
-const skipNativeNotifications = runningInExpoGo();
+
+function canUseNativeNotifications() {
+  if (runningInExpoGo()) {
+    return false;
+  }
+  const mods = NativeModules || {};
+  return Boolean(
+    mods.ExpoPushTokenManager ||
+      mods.ExpoNotificationsModule ||
+      mods.Notifications
+  );
+}
+
+const skipNativeNotifications = !canUseNativeNotifications();
 
 let Notifications = null;
 let loadAttempted = false;

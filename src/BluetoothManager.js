@@ -1,4 +1,3 @@
-import { BleManager } from 'react-native-ble-plx';
 import { PermissionsAndroid, Platform, Alert, NativeModules } from 'react-native';
 import { t } from './i18n';
 
@@ -12,9 +11,9 @@ function getBleManager() {
     return null;
   }
   try {
+    const { BleManager } = require('react-native-ble-plx');
     manager = new BleManager();
   } catch (error) {
-    // console.log('Error creating BLE manager:', error.message);
     return null;
   }
   return manager;

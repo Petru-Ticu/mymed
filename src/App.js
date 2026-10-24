@@ -5,12 +5,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Welcome from './Welcome';
-import LanguageSelector from './SelectLanguage';
-import Home from './Home';
-import Mymeds from './Mymeds';
-import More from './More';
-import Accountsettings from './Accountsettings';
-import Notifications from './Notifications';
 import { MedicalListProvider } from './MedicalListContext';
 import { navigationRef } from './navigation/navigationRef';
 import DoseReminderHost from './DoseReminderHost';
@@ -33,13 +27,22 @@ function App() {
             <Stack.Navigator screenOptions={hiddenHeader}>
               {/* First route: sign-up. MedicationTypingPage is lazy-loaded so calendar-picker does not run at startup. */}
               <Stack.Screen name="Welcome" component={Welcome} />
-              <Stack.Screen name="Language_Selector" component={LanguageSelector} />
-              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen
+                name="Language_Selector"
+                getComponent={() => require('./SelectLanguage').default}
+              />
+              <Stack.Screen
+                name="Home"
+                getComponent={() => require('./Home').default}
+              />
               <Stack.Screen
                 name="Myanalytics"
                 getComponent={() => require('./Myanalytics').default}
               />
-              <Stack.Screen name="Mymeds" component={Mymeds} />
+              <Stack.Screen
+                name="Mymeds"
+                getComponent={() => require('./Mymeds').default}
+              />
               <Stack.Screen
                 name="MedicationTypingPage"
                 getComponent={() => require('./MedicationTypingPage').default}
@@ -48,9 +51,18 @@ function App() {
                 name="MedicationScan"
                 getComponent={() => require('./MedicationScan').default}
               />
-              <Stack.Screen name="More" component={More} />
-              <Stack.Screen name="Accountsettings" component={Accountsettings} />
-              <Stack.Screen name="Notifications" component={Notifications} />
+              <Stack.Screen
+                name="More"
+                getComponent={() => require('./More').default}
+              />
+              <Stack.Screen
+                name="Accountsettings"
+                getComponent={() => require('./Accountsettings').default}
+              />
+              <Stack.Screen
+                name="Notifications"
+                getComponent={() => require('./Notifications').default}
+              />
             </Stack.Navigator>
             </DoseReminderHost>
           </NavigationContainer>
