@@ -13,6 +13,6 @@
     <key>EXUpdatesURL</key>
     <string>https://u.expo.dev/3137aae9-130e-492a-b413-db29646384d3</string>
     <key>EXUpdatesRuntimeVersion</key>
-    <string>exposdk:54.0.0</string>
+    <string>exposdk:58.0.0</string>
   </dict>
 </plist>

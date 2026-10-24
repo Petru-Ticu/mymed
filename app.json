@@ -5,8 +5,7 @@
   "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "light",
-  "newArchEnabled": true,
-  "runtimeVersion": "exposdk:54.0.0",
+  "runtimeVersion": "exposdk:58.0.0",
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "com.anonymous.app-doidoicinci"

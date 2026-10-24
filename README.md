@@ -10,7 +10,7 @@ An on-device medication reminder client for iOS and Android.
 
 myMed is the scheduling layer of a medicine app: when the next dose is due, whether you took it, how much is left, and what to do when the pack is running out. It runs entirely on the phone. There is no account server and no cloud database in this build. That is a deliberate first slice — the product logic is in the client, not behind a login wall that does not exist yet.
 
-Built with **React Native**, **Expo SDK 54**, and **JavaScript**.
+Built with **React Native**, **Expo SDK 58**, and **JavaScript**.
 
 ---
 
@@ -43,7 +43,7 @@ This is not medical software. It does not give clinical advice.
 
 ## Stack
 
-- React Native 0.81, React 19, Expo 54
+- React Native 0.88, React 19, Expo 58
 - React Navigation (stack)
 - Offline i18n: English master catalog + JSON locales
 - Camera: `expo-camera`
