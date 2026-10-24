@@ -1,10 +1,12 @@
 {
   "name": "myMed",
   "slug": "mymed",
+  "platforms": ["ios", "android"],
   "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "light",
   "newArchEnabled": true,
+  "runtimeVersion": "exposdk:54.0.0",
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "com.anonymous.app-doidoicinci"
@@ -14,7 +16,10 @@
       "backgroundColor": "#ffffff"
     },
     "package": "com.anonymous.app_doidoicinci",
-    "softwareKeyboardLayoutMode": "pan"
+    "softwareKeyboardLayoutMode": "pan",
+    "permissions": [
+      "android.permission.CAMERA"
+    ]
   },
   "plugins": [
     [
@@ -32,5 +37,14 @@
         "recordAudioAndroid": false
       }
     ]
-  ]
+  ],
+  "extra": {
+    "eas": {
+      "projectId": "3137aae9-130e-492a-b413-db29646384d3"
+    }
+  },
+  "owner": "petru-ticu",
+  "updates": {
+    "url": "https://u.expo.dev/3137aae9-130e-492a-b413-db29646384d3"
+  }
 }

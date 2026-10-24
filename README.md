@@ -3,10 +3,10 @@
 An on-device medication reminder client for iOS and Android.
 
 <p align="center">
-  <img src="docs/mymed-qr.png" alt="QR code for myMed" width="180" />
+  <img src="docs/mymed-qr.png" alt="QR code to open myMed in Expo Go" width="180" />
 </p>
 
-<p align="center">Scan to open the project: <a href="https://github.com/Petru-Ticu/mymed">github.com/Petru-Ticu/mymed</a></p>
+<p align="center">Scan with <strong>Expo Go</strong> to open myMed. On iPhone, sign in to Expo Go as <strong>petru-ticu</strong> first.</p>
 
 myMed is the scheduling layer of a medicine app: when the next dose is due, whether you took it, how much is left, and what to do when the pack is running out. It runs entirely on the phone. There is no account server and no cloud database in this build. That is a deliberate first slice — the product logic is in the client, not behind a login wall that does not exist yet.
 
